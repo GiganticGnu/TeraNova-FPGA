@@ -16,6 +16,7 @@
 \usepackage{fancyhdr}
 \usepackage{titlesec}
 \usepackage{listings}
+\usepackage{float}
 \usepackage{hyperref}
 
 \hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black}
@@ -70,7 +71,7 @@
 \begin{tabular}{@{}ll@{}}
 \textbf{Author}          & Kai Janssen \\
 \textbf{Student number}  & 4994817 \\
-\textbf{Period covered}  & 30 September -- 7 October 2026 \\
+\textbf{Period covered}  & 30 September -- 29 October 2026 \\
 \textbf{Platform}        & AMD ZCU102 (Zynq UltraScale+ \code{xczu9eg-ffvb1156-2-e}) \\
 \textbf{Tools}           & Vivado / Vitis / Vitis HLS 2025.1.1 \\
 \end{tabular}
@@ -89,7 +90,11 @@ This log records the work I carried out to take over the FPGA matrix-multiplicat
   \item reproducing the previous group's Vivado and Vitis projects on my own PC;
   \item analysing their design and identifying its bottlenecks;
   \item restoring two IP cores that were missing from the hand-over, and making the PS--PL interaction robust;
-  \item preparing a new hardware build.
+  \item preparing a new hardware build;
+  \item putting the project under version control (GitHub) so that both group members work on the same version;
+  \item preparing the baseline measurement on the ZCU102 (measurement application and build package);
+  \item simulating the complete PL data path, including the real HLS RTL, while the board was not available;
+  \item designing and simulating the first improvement: a faster \code{matrix\_partitioner\_B}.
 \end{enumerate}
 
 All work was done in the workspace \code{C:\textbackslash PLD}; the files received from the previous group are kept unchanged in a separate folder.
@@ -97,7 +102,7 @@ All work was done in the workspace \code{C:\textbackslash PLD}; the files receiv
 % ==================================================================
 \section{Status summary}
 % ==================================================================
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabularx}{\textwidth}{@{}Yl@{}}
 \toprule
@@ -113,8 +118,14 @@ Block design updated to the latest IP builds, validated without errors & \ok \\
 RTL (GHDL), HLS C and C/RTL co-simulation of the new data path & \ok \\
 Updated application compiled (against the old hardware export) & \ok \\
 Unused IP repository \code{Cezar\_repo} removed; all 148 IPs up to date & \ok \\
-Bitstream and hardware export (\code{.xsa}) & \blocked{} (licence) \\
-Test on the ZCU102 & \open{} (board and licence pending) \\
+Project under version control (GitHub, \code{GiganticGnu/TeraNova-FPGA}) & \ok \\
+Baseline measurement application written and tested in software & \ok{} (not yet built in Vitis) \\
+Build package and instructions for the licensed PC & \ok \\
+Simulation of the full PL path with the real \code{RAM\_INTERFACE} RTL & \ok{} (all runs PASS) \\
+Simulation report & \ok \\
+Faster partitioner (v5a, v5b) designed and simulated & \ok{} (not yet in \code{ip\_repo}) \\
+Bitstream and hardware export (\code{.xsa}) & \open{} (licence on Badr's laptop) \\
+Test and baseline measurement on the ZCU102 & \open{} (board available, build pending) \\
 \bottomrule
 \end{tabularx}
 \caption{Status at the end of the logged period.}
@@ -183,7 +194,7 @@ I analysed the HDL, HLS and C sources, the block design, and the timing and util
 \textbf{Application update (\code{helloworld.c}).} Separate timing of BRAM load, PL compute, result read-back and CPU-only reference; a 1-second timeout with a GPIO fallback so the program can never hang silently; the start signal is now a toggle so the design can be run repeatedly; two complete runs per execution; build optimisation changed from \code{-O0} to \code{-O2}.
 
 \textbf{Verification (without hardware).}
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabularx}{\textwidth}{@{}Yl@{}}
 \toprule
@@ -227,10 +238,10 @@ The group's licence is \textbf{node-locked} and registered to one group member. 
 % ------------------------------------------------------------------
 While the licence for the ZCU102 is being set up, I listed which steps of the plan do not need it and carried them out in order. Only synthesis/implementation/bitstream for the \code{xczu9eg}, the Vitis platform update (needs the new \code{.xsa}) and the board run remain blocked.
 
-\textbf{Stage 1 -- Backup.} Before changing the projects, I copied \code{S7\_integration} and \code{S7\_integration\_vit} to \code{C:\textbackslash PLD\textbackslash backup\textbackslash S7\_integration\_2026-10-07} and \code{\ldots\textbackslash S7\_integration\_vit\_2026-10-07}.
+{\sloppy \textbf{Stage 1 -- Backup.} Before changing the projects, I copied \code{S7\_integration} and \code{S7\_integration\_vit} to \code{C:\textbackslash PLD\textbackslash backup\textbackslash}\allowbreak\code{S7\_integration\_2026-10-07} and \code{\ldots\textbackslash}\allowbreak\code{S7\_integration\_vit\_2026-10-07}.\par}
 
 \textbf{Stage 2 -- HLS build of \code{RAM\_INTERFACE}.} \code{build\_ip.bat} ran to completion (log in \code{hls\textbackslash RAM\_INTERFACE\textbackslash build\_log.txt}). Contrary to expectation, Vitis HLS C synthesis for the \code{xczu9eg} did \emph{not} need the licence.
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabularx}{\textwidth}{@{}Yl@{}}
 \toprule
@@ -282,6 +293,114 @@ Vivado then loaded only \code{c:/PLD/ip\_repo}. I checked the saved \code{S7\_in
 
 Generation also gave twelve \code{[BD 41-2383] Width mismatch} critical warnings: six connections, each reported by validation and again by generation. They concern the address path of the previous group's design: partitioner \code{bram\_addr\_A/B} (12 bits) $\rightarrow$ \code{mult\_gen\_*/A} (18 bits), and \code{mult\_gen\_*/P} (21 bits) $\rightarrow$ \code{Part0..3/addrb} (32 bits). In every case the narrower side covers the full address range (12 bits = 4096 values for 2500 elements per matrix), and the unconnected upper bits are tied to 0 in synthesis. They are harmless and were not caused by the upgrade.
 
+% ------------------------------------------------------------------
+\subsection{8 -- 28 October 2026 -- Organisation of the group work}
+% ------------------------------------------------------------------
+\textbf{Licence.} Per the supervisor, the node-locked Vivado licence for the \code{xczu9eg} can only be held by one group member. It is installed on Badr's laptop. From then on, the work is split: I do everything that does not need the licence (HLS, simulation, software, analysis, board runs), and the licence-bound steps (synthesis, implementation, bitstream) run on Badr's laptop.
+
+\textbf{One shared version.} Badr and I each had our own build in \code{C:\textbackslash PLD}. We agreed to continue from my restored version as the shared baseline and build on top of it.
+
+\textbf{Board.} In late October the group got access to the ZCU102 board.
+
+% ------------------------------------------------------------------
+\subsection{29 October 2026 -- Version control on GitHub}
+% ------------------------------------------------------------------
+To work on one version without passing zip files around, I put \code{C:\textbackslash PLD} under git and connected it to the GitHub repository \code{GiganticGnu/TeraNova-FPGA} (branch \code{main}). The initial commit, \emph{``Baseline: restored working build''} (\code{2e936e3}, 29 October, 12:01), contains the restored build as described in this log.
+
+The \code{.gitignore} in \code{C:\textbackslash PLD} follows one rule: commit sources, ignore everything the tools regenerate.
+\begin{itemize}[noitemsep]
+  \item \textbf{Tracked:} \code{S7\_integration.xpr} and \code{S7\_integration.srcs} (block design, IP configurations, constraints), the current \code{interrupt\_rerun.xsa}, the packaged IPs in \code{ip\_repo}, the HLS sources and scripts, the Vitis component files and application sources, the simulation sources, the scripts and the reports.
+  \item \textbf{Ignored:} Vivado's generated folders (\code{.gen}, \code{.runs}, \code{.cache}, \code{.hw}, \code{.sim}, \code{.ip\_user\_files}), logs and journals, old \code{.xsa} exports, Vitis build output (\code{build}, \code{export}, \code{\_ide\textbackslash bitstream}, \code{.elf}), HLS work folders, GHDL output, and the local \code{backup} folders, which git history now replaces.
+\end{itemize}
+
+% ------------------------------------------------------------------
+\subsection{29 October 2026 -- Preparing the baseline measurement}
+% ------------------------------------------------------------------
+The goal is to measure how fast the system currently is on the ZCU102, before any improvement. All improvements are then judged against these numbers.
+
+\textbf{Two baselines.} The Vitis platform still points at the previous group's original export (\code{interrupt\_rerun.xsa} of 30 September). Programming and running the board needs no licence. So I planned two baselines:
+\begin{itemize}[noitemsep]
+  \item \textbf{Baseline 0:} the previous group's bitstream, unchanged. It can be measured as soon as the board is available.
+  \item \textbf{Baseline 1:} the restored design (rebuilt \code{RAM\_INTERFACE}, partitioner revision~4), once Badr has built its bitstream. This is the reference for the improvements. Its PL compute time should agree with Baseline 0, because the data path did not change.
+\end{itemize}
+
+{\sloppy \textbf{Measurement application.} I wrote a measurement version of \code{helloworld.c} (\code{C:\textbackslash PLD\textbackslash baseline\textbackslash}\allowbreak\code{helloworld.c}). It does the same work as the normal application and uses only hardware names that exist in both the old and the restored design. Compared with the normal application it:\par}
+\begin{itemize}[noitemsep]
+  \item runs the PL 10 times instead of twice and prints minimum, average and maximum per phase;
+  \item measures with 10\,ns resolution (the A53 generic timer) instead of whole microseconds;
+  \item measures the cost of one PS$\rightarrow$BRAM write, one BRAM read and one PL-DDR4 read (``latency probes''), so the load and read-back totals can be explained;
+  \item repeats the CPU-only reference and reports the cold and the best (warm-cache) time;
+  \item detects \code{done} both by interrupt and by polling GPIO channel~2, so a compute time is measured even if the interrupt path does not work;
+  \item prints one \code{CSV,} line per run for a spreadsheet, and the compiler optimisation level of the build.
+\end{itemize}
+Verification: it compiles without warnings at \code{-O0} and \code{-O2} against stub versions of the Xilinx headers, and its logic was tested against a simulated board in four cases: interrupt works, only GPIO works, nothing arrives, and one wrong result. Each case gave the expected output. It still has to be built in Vitis and run on the board. A \code{results} folder (with a README for the log files) is ready next to it.
+
+\textbf{Build package for the licensed PC.} Badr only needs the Vivado side: \code{S7\_integration}, \code{ip\_repo} and \code{scripts}, at exactly \code{C:\textbackslash PLD}. His steps: rename his own old \code{C:\textbackslash PLD}, unpack the package, check Report IP Status, run \code{3\_build\_and\_export.tcl}, and save utilisation and timing reports (\code{report\_utilization}, \code{report\_timing\_summary}). He then sends back \code{interrupt\_rerun.xsa} and the two reports. On my side the Vivado project stays frozen until the \code{.xsa} comes back. Everything is written down in a separate step-by-step baseline guide.
+
+\textbf{Correction to the setup guide.} After a platform update the bitstream is found in \code{interrupt\_rerun\_plat\textbackslash export\textbackslash}\allowbreak\code{interrupt\_rerun\_plat\textbackslash hw\textbackslash sdt\textbackslash}\allowbreak\code{interrupt\_rerun.bit}. The setup guide gives this path without the \code{sdt} folder.
+
+% ------------------------------------------------------------------
+\subsection{29 October 2026 -- Simulation of the complete PL data path}
+% ------------------------------------------------------------------
+Working from home without the board, I simulated everything inside the PL. The results are written up in a separate report (\code{report\textbackslash simulation\_report}, also as an Overleaf project).
+
+\textbf{Testbenches.} The functional testbench \code{tb\_chain} and the HLS testbench already existed. I added (all in \code{C:\textbackslash PLD\textbackslash sim}):
+\begin{itemize}[noitemsep]
+  \item \code{tb\_chain\_perf}: \code{tb\_chain} plus passive monitors on every valid/ready handshake that count cycles per stage;
+  \item \code{tb\_chain\_rtl}: the data path with the \emph{real} \code{RAM\_INTERFACE} RTL generated by Vitis HLS, writing through \code{m\_axi} into a new AXI4 memory model (\code{axi\_mem\_model.vhd}) with adjustable write-response latency $L$. With \code{RUNS=2} it does a second complete run without reset;
+  \item \code{run\_all.py}, which compiles and runs all cases and writes \code{results.json}.
+\end{itemize}
+One line of the generated \code{RAM\_INTERFACE\_gmem\_m\_axi.vhd} uses a VHDL-2019 construct that GHDL does not accept. In the simulation copy (\code{sim\textbackslash hls\_rtl}) it is replaced by an equivalent VHDL-2008 function, marked \code{SIM PATCH}. The packaged IP is unchanged.
+
+\textbf{Results} (GHDL 4.1.0; all runs give the correct $50\times50$ result):
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{@{}Yl@{}}
+\toprule
+\textbf{Result} & \textbf{Value} \\
+\midrule
+PL run, writer model & 101\,008 cycles (1.010\,ms) \\
+PL run, real \code{RAM\_INTERFACE}, $L = 20$ & 101\,186 cycles (1.012\,ms) \\
+Partitioner: interval between block pairs & 101 cycles (25 elements $\times$ 4 states + 1) \\
+Multiplier busy & 5\,000 cycles (4.95\,\%) \\
+Writer: AXI bursts & 504 bursts of 1--5 beats (one per block row; 4 split at 4\,KB) \\
+Restart without reset & PASS, second run identical \\
+Random 64-bit data, slow writer, throttled write channel & PASS \\
+\bottomrule
+\end{tabularx}
+\caption{Main simulation results of the current design.}
+\end{table}
+
+These confirm findings F3, F6, F7 and F11 of the analysis report with exact numbers. The simulation also found something new. The generated \code{RAM\_INTERFACE} waits for the write response after every row of 5 values, so it needs $85 + 5L$ cycles per output block. This explains why co-simulation measured 78 cycles per block where HLS estimated 41. With the current partitioner the writer stays hidden up to $L = 185$ cycles.
+
+% ------------------------------------------------------------------
+\subsection{29 October 2026 -- First improvement: a faster partitioner}
+% ------------------------------------------------------------------
+I wrote two drop-in versions of \code{matrix\_partitioner\_B} (\code{sim\textbackslash variants}). Both have the same entity, ports, block order and output packing as revision~4:
+\begin{itemize}[noitemsep]
+  \item \textbf{v5a:} revision~4 with \code{WAIT1} and \code{WAIT2} removed (2 cycles per element);
+  \item \textbf{v5b:} pipelined fetch, a new BRAM address every cycle, each element captured two edges later (1 cycle per element).
+\end{itemize}
+Both need the BRAM read latency to be 1 cycle and the address multipliers to add no delay. I checked this in the \code{.xci} files of the block design. All four BRAMs have \code{C\_READ\_LATENCY\_B = 1} without output registers, and both \code{mult\_gen} instances have \code{C\_LATENCY = 0}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+ & \textbf{rev.~4} & \textbf{v5a} & \textbf{v5b} \\
+\midrule
+Cycles per block pair & 101 & 51 & 27 \\
+PL run, real \code{RAM\_INTERFACE}, $L = 20$ (cycles) & 101\,186 & 51\,186 & 27\,186 \\
+Speed-up of the PL part & 1.00$\times$ & 1.98$\times$ & 3.72$\times$ \\
+Largest latency $L$ the writer can hide (cycles) & 185 & 85 & 37 \\
+All functional tests incl.\ restart & PASS & PASS & PASS \\
+\bottomrule
+\end{tabular}
+\caption{Simulated partitioner versions (\code{run\_variants.py}, 63 runs).}
+\end{table}
+
+v5b brings the PL run from 1.012\,ms to 0.272\,ms. It reaches that speed only if the result memory confirms a write within 37 cycles; above that, the result writer sets the pace for every version. The variants are not yet in \code{ip\_repo}: the hardware design is unchanged until the group decides to build one.
+
 % ==================================================================
 \section{Files created and modified}
 % ==================================================================
@@ -304,6 +423,17 @@ Generation also gave twelve \code{[BD 41-2383] Width mismatch} critical warnings
 \code{S7\_integration\_vit\textbackslash}\allowbreak\code{\ldots\textbackslash src\textbackslash UserConfig.cmake} & Optimisation \code{-O0} $\rightarrow$ \code{-O2} \\
 \code{report\textbackslash previous\_group\_analysis.tex} & Analysis report of the previous design \\
 \code{README\_UPGRADE.md} & Step-by-step upgrade guide \\
+\code{.gitignore} & Git rules: sources tracked, generated files ignored (29 Oct) \\
+\code{baseline\textbackslash helloworld.c} & Baseline measurement application (29 Oct) \\
+\code{baseline\textbackslash results\textbackslash README.txt} & Naming of the board log files and CSV fields \\
+\code{sim\textbackslash tb\_chain\_perf.vhd}, \code{run\_perf.py} & Testbench with handshake monitors (29 Oct) \\
+\code{sim\textbackslash tb\_chain\_rtl.vhd}, \code{run\_rtl.py}, \code{axi\_mem\_model.vhd} & Testbench with the real \code{RAM\_INTERFACE} RTL and an AXI4 memory model \\
+\code{sim\textbackslash hls\_rtl\textbackslash *.vhd} & Simulation copy of the generated \code{RAM\_INTERFACE} RTL (one \code{SIM PATCH} line) \\
+\code{sim\textbackslash run\_all.py}, \code{results.json} & All simulations of the current design and their results \\
+\code{sim\textbackslash variants\textbackslash *.vhd} & Partitioner versions v5a and v5b \\
+\code{sim\textbackslash run\_variants.py}, \code{variants\_results.json} & Simulations of the partitioner versions and their results \\
+\code{sim\textbackslash make\_figures.py}, \code{README\_perf.md} & Report figures; description of the new testbenches \\
+\code{report\textbackslash simulation\_report\textbackslash *} & Simulation report (\LaTeX{}, figures, PDF) \\
 \midrule
 \code{backup\textbackslash *} & Old partitioner VHDL and \code{RAM\_INTERFACE} IP \\
 \code{backup\textbackslash S7\_integration*\_2026-10-07} & Full copies of the Vivado project and Vitis workspace (7 Oct) \\
@@ -325,21 +455,30 @@ Do not use ``Upgrade IP'' for the two locked IPs & The offered version was older
 Rebuild \code{RAM\_INTERFACE} from source (option B) & Editable code, a correct handshake, and a starting point for the planned improvements. \\
 Verify by simulation before building & Hardware builds are long and currently licence-bound; simulation catches functional errors cheaply. \\
 Co-simulate a separate \code{ap\_ctrl\_hs} variant & Co-simulation does not support this \code{ap\_ctrl\_none} design; a macro-selected variant verifies the same data path and \code{m\_axi} writes without changing the packaged IP. \\
-Do not re-run \code{2\_update\_block\_design.tcl}; use an upgrade-only script & The block design was already rewired; only the IP revision changed, and an upgrade keeps the existing connections. \\
+Do not re-run \code{2\_update\_}\allowbreak\code{block\_design.tcl}; use an upgrade-only script & The block design was already rewired; only the IP revision changed, and an upgrade keeps the existing connections. \\
 Remove \code{Cezar\_repo} from the project & No IP came from it; a second, empty repository only adds a source of confusion and a risk of picking up stale IP versions later. \\
+Licence-free work on my PC, builds on Badr's laptop & The licence can only be held by one member; a build is only needed when the hardware changes. \\
+My restored version is the shared baseline & One version avoids two diverging copies of \code{C:\textbackslash PLD}. \\
+GitHub with a sources-only \code{.gitignore} & Both members work on one history; generated folders are large and are recreated by the tools. \\
+Measure two baselines (old bitstream, restored design) & Baseline 0 needs no build and can be measured at once; agreement with Baseline 1 shows the restoration did not change the timing. \\
+Simulate the real HLS RTL, not only a model & The model hid the per-row write-response wait in the generated \code{RAM\_INTERFACE}. \\
+Prefer partitioner v5b over v5a & Same build effort, almost twice the gain (3.72$\times$ vs 1.98$\times$). \\
+Keep the variants out of \code{ip\_repo} for now & The hardware design stays identical to the version being measured as the baseline. \\
 \bottomrule
 \end{longtable}
 
 % ==================================================================
 \section{Open issues and next steps}
 % ==================================================================
-\begin{enumerate}
-  \item \textbf{Build}: run \code{3\_build\_and\_export.tcl} on the PC holding the node-locked licence; this also regenerates the three out-of-context runs that failed on my PC (Stage~9). Check that the worst negative slack is $\geq 0$; obtain \code{interrupt\_rerun.xsa}.
-  \item \textbf{Vitis}: switch the platform to the new \code{.xsa} and rebuild platform and application.
-  \item \textbf{Board preparation}: install the JTAG and CP210x drivers now; once the board is available, check the COM ports, set SW6 to JTAG and test the JTAG connection in the Hardware Manager.
-  \item \textbf{Board test}: run on the ZCU102 (JTAG + UART at 115\,200 baud); expected output ends with \code{ALL RUNS PASSED}.
-  \item \textbf{Measure}: BRAM load time, PL compute time, read-back time and CPU-only time, to replace the estimates in the analysis report.
-  \item \textbf{Improve}: start with the low-effort changes (partitioner wait states), then the burst-based data path.
+\begin{enumerate}[noitemsep]
+  \item \textbf{Commit the new work.} The baseline application, the new testbenches, the variants and the simulation report were made after the initial commit and are not yet in the repository.
+  \item \textbf{Baseline 0}: build the measurement application in Vitis and run it on the ZCU102 with the existing bitstream (no licence needed).
+  \item \textbf{Build}: Badr runs \code{3\_build\_and\_export.tcl} on the restored design and returns \code{interrupt\_rerun.xsa} plus the utilisation and timing reports (WNS $\geq 0$). To decide: build from a GitHub clone or from the 7-Zip package. A clone does not contain the ignored generated folders (\code{.gen}, \code{.runs}, \code{.cache}); the build script regenerates them, which has to be confirmed on the first build. The new \code{.xsa} can come back through the repository, because \code{interrupt\_rerun.xsa} is tracked.
+  \item \textbf{Baseline 1}: update the Vitis platform with the new \code{.xsa}, check the bitstream date, measure, and compare the PL compute time with the simulated 1.012\,ms.
+  \item \textbf{Improve}: put partitioner v5b in \code{ip\_repo} (core revision 5), have it built and measured (expected 0.272\,ms PL compute).
+  \item \textbf{Writer}: change \code{RAM\_INTERFACE} so that it no longer waits for a write response after every row, and verify it in \code{tb\_chain\_rtl}; otherwise v5b only reaches its speed if the memory latency is at most 37 cycles.
+  \item \textbf{Setup guide}: correct the bitstream path (\code{hw\textbackslash sdt}) and add the GitHub workflow.
+  \item \textbf{Then}: the burst-based data path from the analysis report (PL master on \code{S\_AXI\_HP0\_FPD}).
 \end{enumerate}
 
 \end{document}
