@@ -1,0 +1,68 @@
+{
+  "schema": "xilinx.com:schema:json_instance:1.0",
+  "ip_inst": {
+    "xci_name": "accu_to_DDR_matrix_to_ports_0_0",
+    "cell_name": "Cezars_pin_paradise/matrix_to_ports_0",
+    "component_reference": "xilinx.com:module_ref:matrix_to_ports:1.0",
+    "ip_revision": "1",
+    "gen_directory": "../../../../../../S7_integration.gen/sources_1/bd/accu_to_DDR/ip/accu_to_DDR_matrix_to_ports_0_0",
+    "parameters": {
+      "component_parameters": {
+        "Component_Name": [ { "value": "accu_to_DDR_matrix_to_ports_0_0", "resolve_type": "user", "usage": "all" } ]
+      },
+      "project_parameters": {
+        "ARCHITECTURE": [ { "value": "zynquplus" } ],
+        "BASE_BOARD_PART": [ { "value": "xilinx.com:zcu102:part0:3.4" } ],
+        "BOARD_CONNECTIONS": [ { "value": "" } ],
+        "DEVICE": [ { "value": "xczu9eg" } ],
+        "PACKAGE": [ { "value": "ffvb1156" } ],
+        "PREFHDL": [ { "value": "VHDL" } ],
+        "SILICON_REVISION": [ { "value": "" } ],
+        "SIMULATOR_LANGUAGE": [ { "value": "MIXED" } ],
+        "SPEEDGRADE": [ { "value": "-2" } ],
+        "STATIC_POWER": [ { "value": "" } ],
+        "TEMPERATURE_GRADE": [ { "value": "E" } ]
+      },
+      "runtime_parameters": {
+        "IPCONTEXT": [ { "value": "IP_Integrator" } ],
+        "IPREVISION": [ { "value": "1" } ],
+        "MANAGED": [ { "value": "TRUE" } ],
+        "OUTPUTDIR": [ { "value": "../../../../../../S7_integration.gen/sources_1/bd/accu_to_DDR/ip/accu_to_DDR_matrix_to_ports_0_0" } ],
+        "SELECTEDSIMMODEL": [ { "value": "" } ],
+        "SHAREDDIR": [ { "value": "../../ipshared" } ],
+        "SWVERSION": [ { "value": "2025.1.1" } ],
+        "SYNTHESISFLOW": [ { "value": "OOC_HIERARCHICAL" } ]
+      }
+    },
+    "boundary": {
+      "ports": {
+        "M_in": [ { "direction": "in", "size_left": "1599", "size_right": "0" } ],
+        "Out0": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out1": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out2": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out3": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out4": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out5": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out6": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out7": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out8": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out9": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out10": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out11": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out12": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out13": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out14": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out15": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out16": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out17": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out18": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out19": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out20": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out21": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out22": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out23": [ { "direction": "out", "size_left": "63", "size_right": "0" } ],
+        "Out24": [ { "direction": "out", "size_left": "63", "size_right": "0" } ]
+      }
+    }
+  }
+}

@@ -1,0 +1,324 @@
+\documentclass[11pt,a4paper]{article}
+
+% ------------------------------------------------------------------
+% Packages (same style as the project log)
+% ------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black}
+
+\definecolor{codebg}{gray}{0.96}
+\definecolor{notebg}{RGB}{255,246,228}
+\definecolor{noteframe}{RGB}{200,110,0}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{gray!40},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false
+}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\bs}{\textbackslash\allowbreak{}}
+\let\oldunderscore\_
+\renewcommand{\_}{\oldunderscore\allowbreak{}}
+\newcommand{\pld}[1]{\code{C:\bs PLD\bs #1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% Highlighted "important" box
+\newcommand{\important}[1]{%
+  \par\smallskip\noindent
+  \fcolorbox{noteframe}{notebg}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\small\textbf{Important.} #1}}%
+  \par\smallskip}
+
+\setlength{\emergencystretch}{3em}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small TeraNova -- FPGA Acceleration}
+\rhead{\small Setup guide}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+% ------------------------------------------------------------------
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\LARGE\bfseries Setup Guide\par}
+\vspace{0.5cm}
+{\Large FPGA Matrix-Multiplication Accelerator on the ZCU102\par}
+\vspace{0.3cm}
+{\large For project groups continuing the TeraNova -- FPGA Acceleration project\par}
+\vspace{2cm}
+\begin{tabular}{@{}ll@{}}
+\textbf{Written by}  & Kai Janssen (4994817) \\
+\textbf{Version}     & 7 October 2026 \\
+\textbf{Platform}    & AMD ZCU102 (Zynq UltraScale+ \code{xczu9eg-ffvb1156-2-e}) \\
+\textbf{Tools}       & Vivado / Vitis / Vitis HLS 2025.1.1 \\
+\textbf{Workspace}   & \code{C:\bs PLD} \\
+\end{tabular}
+\vfill
+{\small This guide is kept in \code{C:\bs PLD\bs SETUP\_GUIDE.pdf}; its \LaTeX{} source is \code{C:\bs PLD\bs report\bs setup\_guide.tex}.\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ==================================================================
+\section{What this project is}
+% ==================================================================
+TeraNova measures nano-structures on wafers by shining a laser at them and solving an inverse-scattering problem. The question this project investigates is whether moving those calculations to an FPGA and accelerating them in hardware reduces the run time of the system.
+
+The current hardware demonstrator multiplies two $50\times50$ matrices of 64-bit integers on the programmable logic (PL) of a Zynq UltraScale+ MPSoC, controlled by a bare-metal program on the ARM processor (PS):
+\begin{enumerate}[noitemsep]
+  \item the CPU writes matrices A and B into four block RAMs (\code{Part0}--\code{Part3});
+  \item the CPU toggles a start GPIO;
+  \item \code{matrix\_partitioner\_B} reads the matrices in $5\times5$ blocks;
+  \item \code{MatMul5x5} multiplies two blocks; the accumulator sums 10 partial products per output block;
+  \item \code{RAM\_INTERFACE} (HLS) writes each finished $5\times5$ result block to the PL-side DDR4 at \code{0x4\_0000\_0000};
+  \item when the whole $50\times50$ result has been written, \code{done} raises an interrupt (and is also readable on GPIO channel 2); the CPU reads the result back, checks it and prints timing.
+\end{enumerate}
+
+For the history of the design, the problems found and the decisions taken, read the documents in \pld{report} (Section~\ref{sec:moreinfo}).
+
+% ==================================================================
+\section{What you need}
+% ==================================================================
+\begin{longtable}{@{}p{0.27\textwidth}p{0.68\textwidth}@{}}
+\toprule
+\textbf{Item} & \textbf{Details} \\
+\midrule
+\endhead
+Windows PC & At least 16\,GB RAM (more speeds up builds). The Vivado/Vitis installation needs several tens of GB of disk space; the project itself is about 1.3\,GB zipped. \\
+Vivado + Vitis \textbf{2025.1.1} & Exactly this version. Install with \emph{Zynq UltraScale+ MPSoC} device support and the \emph{cable drivers}, to \code{C:\bs Xilinx\bs 2025.1.1}. Vitis HLS is included in Vitis. \\
+Licence for \code{xczu9eg} & Needed only for synthesis, implementation and bitstream generation in Vivado. The free edition does not cover this device. See Section~\ref{sec:licence}. \\
+ZCU102 board & With its 12\,V supply and two micro-USB cables (JTAG and UART). \\
+CP210x USB-UART driver & From Silicon Labs; needed to see the board's serial output. \\
+Serial terminal & The Vitis Serial Monitor, or PuTTY. \\
+GHDL + Python 3 (optional) & Only for the stand-alone RTL simulation in \pld{sim}. \\
+\bottomrule
+\end{longtable}
+
+\subsection{About the licence}\label{sec:licence}
+The group's Vivado licence for the \code{xczu9eg} is \textbf{node-locked}: it is tied to one PC and registered to one group member. Everything except the hardware build works without it: HLS (including C synthesis for this device), block-design editing and validation, all simulations, Vitis software builds, and programming and running the board.
+
+\emph{Generate Output Products} also needs the licence: with the default \emph{Out of context per IP} setting it synthesises every IP that has no cached result, and each of those runs fails without a licence (see Section~\ref{sec:build}). Opening the project, \emph{Report IP Status} and \emph{Validate Design} do not need it.
+
+A hardware build is only needed when the \emph{hardware} changes. Changes to the C application never need one. Practical options when only one PC holds the licence: build on that PC (remote access or a copy of \code{C:\bs PLD}), or ask the supervisor about re-hosting the licence to a shared build PC.
+
+% ==================================================================
+\section{Folder layout}
+% ==================================================================
+\important{Everything must be at exactly \code{C:\bs PLD}. The Vivado project and the Vitis workspace contain absolute paths to this location; any other location breaks the projects.}
+
+\begin{longtable}{@{}p{0.38\textwidth}p{0.57\textwidth}@{}}
+\toprule
+\textbf{Path (under \code{C:\bs PLD})} & \textbf{Content} \\
+\midrule
+\endhead
+\code{S7\_integration\bs} & Vivado project (\code{S7\_integration.xpr}); block design \code{accu\_to\_DDR.bd}. ``S7'' is only a name: the target is the ZCU102. \\
+\code{S7\_integration\_vit\bs} & Vitis workspace: platform \code{interrupt\_rerun\_plat} and application \code{interrupt\_rerun\_test}. \\
+\code{S7\_integration\_vit\bs}\allowbreak\code{interrupt\_rerun\_test\bs src\bs helloworld.c} & The application: loads the matrices, starts the PL, waits for the interrupt, checks and times everything. \\
+\code{ip\_repo\bs} & Custom IP repository, one folder per IP: \code{RAM\_INTERFACE}, \code{matrix\_partitioner\_B}, \code{MatMul5x5\_Acc}, \code{MatMul5x5\_PAR\_IF}, \code{matrix\_partitioner\_old} (unused). This is the \emph{only} IP repository the project uses. \\
+\code{hls\bs RAM\_INTERFACE\bs} & HLS source, testbench, configs and build scripts of the result writer (Section~\ref{sec:hls}). \\
+\code{scripts\bs} & Vivado Tcl scripts for packaging, block-design updates and the hardware build. \\
+\code{sim\bs} & GHDL testbench of the complete PL data path. \\
+\code{report\bs} & Analysis report, project log and the source of this guide. \\
+\code{backup\bs} & Older IP versions, the previous \code{.xsa}, and dated full copies of the projects. \\
+\code{README\_UPGRADE.md} & The original upgrade plan of October 2026 (historical; this guide supersedes it). \\
+\bottomrule
+\end{longtable}
+
+% ==================================================================
+\section{First-time setup}\label{sec:firstsetup}
+% ==================================================================
+\begin{enumerate}
+  \item \textbf{Get the files.} Unpack the hand-over archive so that the folder is \code{C:\bs PLD} (check that \pld{S7\_integration\bs S7\_integration.xpr} exists, not \code{C:\bs PLD\bs PLD\bs \ldots}). Use 7-Zip; Windows' built-in extractor is slow and can fail on long paths.
+  \item \textbf{Install the tools.} Install Vivado/Vitis 2025.1.1 (see the table above). Then run, as administrator:
+\begin{lstlisting}
+C:\Xilinx\2025.1.1\data\xicom\cable_drivers\nt64\install_drivers_wrapper.bat
+\end{lstlisting}
+  and install the Silicon Labs CP210x driver.
+  \item \textbf{Open the Vivado project.} Start Vivado 2025.1.1 $\rightarrow$ \emph{Open Project} $\rightarrow$ \pld{S7\_integration\bs S7\_integration.xpr}. Then \emph{Reports $\rightarrow$ Report IP Status}. Expected: all IPs up to date, none locked.
+  \begin{itemize}[noitemsep]
+    \item Many \code{[Board 49-26] cannot add Board Part \ldots} warnings are normal: they concern evaluation boards of device families that are not installed.
+    \item ``generated file not found \ldots\ Please regenerate'' warnings (e.g.\ for \code{accu\_to\_DDR\_axi\_smc\_0}) only mean that the cached synthesis results of that IP are missing. They are recreated by the hardware build on the licensed PC; on an unlicensed PC you cannot clear them.
+    \item ``Up-to-date (discontinued)'' for three Constant IPs inside the SmartConnects is normal and needs no action.
+    \item The IP Catalog must list only \pld{ip\_repo} as user repository (\emph{Settings $\rightarrow$ IP $\rightarrow$ Repository}). Older copies of the project also listed \code{../Cezar\_repo}, a folder that was never part of the hand-over; it was removed from the project on 7~October~2026. If you see it, remove it with \code{set\_property ip\_repo\_paths C:/PLD/ip\_repo [current\_project]} followed by \code{update\_ip\_catalog}.
+    \item If \emph{all} IPs are locked with ``Newer software version'', you are not on 2025.1.1.
+    \item If only \code{RAM\_INTERFACE\_0} is locked, the IP was rebuilt after the block design was saved: run \code{2b\_upgrade\_after\_rebuild.tcl} (Section~\ref{sec:hls}).
+  \end{itemize}
+  \item \textbf{Open the Vitis workspace.} Start Vitis 2025.1.1 $\rightarrow$ \emph{Open Workspace} $\rightarrow$ \pld{S7\_integration\_vit}. Select the component \code{interrupt\_rerun\_test} in the \emph{Flow} panel and click \emph{Build}. It must finish with a size summary and no errors.
+  \item \textbf{Check the board connection} (Section~\ref{sec:board}).
+\end{enumerate}
+
+% ==================================================================
+\section{Common workflows}
+% ==================================================================
+Pick the workflow that matches what you change. Always make a dated copy of \pld{S7\_integration} and \pld{S7\_integration\_vit} in \pld{backup} before larger changes.
+
+\subsection{Changing only the software}
+\begin{enumerate}[noitemsep]
+  \item Edit the files in \code{interrupt\_rerun\_test\bs src}. Compiler options (currently \code{-O2}) are in \code{UserConfig.cmake}.
+  \item Build \code{interrupt\_rerun\_test} in Vitis and run it on the board (Section~\ref{sec:board}). No licence or hardware build needed.
+\end{enumerate}
+\important{If you edit a source file outside Vitis, close it in Vitis first. Otherwise Vitis may save its older copy over your change.}
+
+\subsection{Changing \code{RAM\_INTERFACE} (HLS)}\label{sec:hls}
+The source is \code{RAM\_INTERFACE.cpp/.hpp} in \pld{hls\bs RAM\_INTERFACE}; the testbench is \code{RAM\_INTERFACE\_TEST.cpp}. The block is free-running (\code{ap\_ctrl\_none}): it reads one $5\times5$ block from an \code{ap\_fifo} stream (connected to the accumulator's \code{C\_valid}/\code{C\_ready}), writes it through \code{m\_axi} to DDR4, and raises \code{done} after the last block.
+\begin{enumerate}
+  \item \textbf{Build the IP.} In a Command Prompt:
+\begin{lstlisting}
+cd /d C:\PLD\hls\RAM_INTERFACE
+build_ip.bat > build_log.txt 2>&1
+\end{lstlisting}
+  This runs C simulation, C synthesis and packaging, and installs the IP in \pld{ip\_repo\bs RAM\_INTERFACE} (the previous one goes to \pld{backup\bs RAM\_INTERFACE\_old}). \code{build\_log.txt} must end with \code{DONE}. The synthesis report is \code{work\bs hls\bs syn\bs report\bs RAM\_INTERFACE\_csynth.rpt}; check that the estimated clock period is below 10\,ns.
+  \item \textbf{Co-simulate the RTL.}
+\begin{lstlisting}
+run_cosim.bat > cosim_log.txt 2>&1
+\end{lstlisting}
+  The log must contain \code{C/RTL co-simulation finished: PASS}. Co-simulation does not support this \code{ap\_ctrl\_none} design directly, so \code{run\_cosim.bat} builds a variant with an \code{ap\_ctrl\_hs} handshake (macro \code{COSIM\_HS}, set in \code{hls\_config\_cosim.cfg}, work folder \code{work\_cosim}). The data path and memory writes are identical; the packaged IP is not affected. Keep the \code{\#ifdef COSIM\_HS} block in \code{RAM\_INTERFACE.cpp}.
+  \item \textbf{Update the block design.} In the Vivado Tcl console, with the project open:
+\begin{lstlisting}
+source C:/PLD/scripts/2b_upgrade_after_rebuild.tcl
+\end{lstlisting}
+  This upgrades the IP in place, keeps all connections, validates and saves. Validation must give no errors.
+  \item Continue with the hardware build (Section~\ref{sec:build}).
+\end{enumerate}
+\important{\code{2b\_upgrade\_after\_rebuild.tcl} only works if the ports did not change. If you add, remove or rename ports, you must reconnect the cell yourself; \code{2\_update\_block\_design.tcl} shows how (it deletes the cell, recreates it and wires every pin). Do not run script 2 on a block design that is already wired correctly.}
+
+\subsection{Changing a VHDL IP (e.g.\ the partitioner)}
+\begin{enumerate}[noitemsep]
+  \item Edit the VHDL in its \pld{ip\_repo} folder (keep a copy of the old file in \pld{backup}). Simulate it first with the GHDL testbench (Section~\ref{sec:sim}).
+  \item Raise the core revision so that Vivado offers an \emph{upgrade}: copy \code{scripts\bs 1\_repackage\_partitioner.tcl}, change the \code{set\_property core\_revision 4} line to the next number (and the \code{component.xml} path for another IP), and source it in Vivado.
+  \item Upgrade the IP in the block design (\emph{Report IP Status $\rightarrow$ Upgrade Selected}, or adapt \code{2b\_upgrade\_after\_rebuild.tcl}), validate and save.
+\end{enumerate}
+\important{Never accept an ``Upgrade IP'' that goes to a \emph{lower} revision than the one in the design. That happened with the original hand-over: the archived IPs were older than the ones used in the project.}
+
+\subsection{Building the hardware and exporting the \code{.xsa}}\label{sec:build}
+On the PC with the licence, with the project open in Vivado:
+\begin{lstlisting}
+source C:/PLD/scripts/3_build_and_export.tcl
+\end{lstlisting}
+This backs up the old \code{.xsa} to \pld{backup}, generates the output products, runs synthesis and implementation up to the bitstream (this takes a long time), prints the worst negative slack and writes \pld{S7\_integration\bs interrupt\_rerun.xsa}.
+\begin{itemize}[noitemsep]
+  \item The worst negative slack (WNS) must be $\geq 0$. If not, timing is not met and the hardware cannot be trusted.
+  \item \code{ERROR: [Common 17-345] A valid license was not found \ldots\ 'xczu9eg'} means this PC has no licence. The same error appears when you run \emph{Generate Output Products} on an unlicensed PC: the out-of-context runs of the IPs without a cached result fail (on 7~October~2026: \code{axi\_smc\_0}, \code{matrix\_partitioner\_B\_0} and \code{RAM\_INTERFACE\_0}) and Vivado shows ``Multiple block runs Failed''. Nothing in the project is damaged; build on the licensed PC.
+  \item The message ``Failed to create directory 'C'\,'' at start-up is harmless.
+  \item Twelve \code{[BD 41-2383] Width mismatch} critical warnings (six connections, each reported twice: by validation and by generation) come from the original design and are harmless. They concern the address path partitioner $\rightarrow$ \code{mult\_gen} $\rightarrow$ BRAM: \code{bram\_addr\_A/B} (12 bits) to \code{mult\_gen\_*/A} (18 bits), and \code{mult\_gen\_*/P} (21 bits) to \code{Part0..3/addrb} (32 bits). The narrower side always covers the full address range (12 bits = 4096 values for 2500 elements), and the unconnected upper bits are tied to 0 in synthesis, which is the correct value.
+\end{itemize}
+
+\subsection{Updating the Vitis platform after a hardware build}
+\begin{enumerate}[noitemsep]
+  \item In Vitis, open \code{interrupt\_rerun\_plat} $\rightarrow$ \emph{Settings} (\code{vitis-comp.json}) $\rightarrow$ update the hardware specification to \pld{S7\_integration\bs interrupt\_rerun.xsa}, then build the platform.
+  \item Build \code{interrupt\_rerun\_test}.
+  \item Check that \code{interrupt\_rerun\_test\bs \_ide\bs bitstream\bs interrupt\_rerun.bit} has today's date. If not, copy \code{interrupt\_rerun\_plat\bs export\bs interrupt\_rerun\_plat\bs hw\bs interrupt\_rerun.bit} over it. The run configuration programs the FPGA from this file.
+\end{enumerate}
+
+\subsection{Running on the board}\label{sec:board}
+\begin{enumerate}[noitemsep]
+  \item Set boot-mode switch \textbf{SW6 to JTAG} (all four switches ON). Check this against the label on the board.
+  \item Connect the JTAG and UART micro-USB cables and the 12\,V supply; switch on with \textbf{SW1}.
+  \item Device Manager should show four Silicon Labs CP210x COM ports. The \emph{lowest} number is PS UART0, where the program prints.
+  \item Open a terminal on that port: 115\,200 baud, 8 data bits, no parity, 1 stop bit, no flow control.
+  \item Close Vivado's Hardware Manager (it occupies the JTAG cable), then in Vitis select \code{interrupt\_rerun\_test} and click \emph{Run}.
+\end{enumerate}
+Expected output: for each of two runs, the BRAM load time, PL compute time, read-back time and a correctness check, plus the CPU-only reference time, ending with \code{ALL RUNS PASSED}. If the interrupt does not arrive, the program times out after 1\,s, reads \code{done} on GPIO channel 2 and reports whether the PL finished. This tells you whether the problem is in the PL or in the interrupt path.
+
+% ==================================================================
+\section{Simulation}\label{sec:sim}
+% ==================================================================
+\subsection{HLS}
+C simulation is part of \code{build\_ip.bat}; C/RTL co-simulation is \code{run\_cosim.bat} (Section~\ref{sec:hls}). Both need no licence and no board.
+
+\subsection{RTL simulation of the complete PL data path (GHDL)}
+\pld{sim} contains \code{tb\_chain.vhd}, which connects a BRAM model, the partitioner, the multiplier, the accumulator and a model of the \code{RAM\_INTERFACE} handshake. \code{run.py} writes the input matrices, runs GHDL and compares the $50\times50$ result with Python. In a Command Prompt with \code{ghdl} and \code{python} on the PATH:
+\begin{lstlisting}
+cd /d C:\PLD\sim
+for %f in (MatMul5x5.vhd MatMul5x5_IF_IN.vhd MatMul5x5_Accumulator.vhd matrix_to_ports.vhd matrix_partitioner_B.vhd tb_chain.vhd) do ghdl -a --std=08 -frelaxed %f
+ghdl -e --std=08 -frelaxed tb_chain
+python run.py
+python run.py -gWRITE_BUSY_CYCLES=1500
+\end{lstlisting}
+The last line simulates a slow writer (back-pressure). All cases must report PASS. The VHDL files in \pld{sim} are copies; if you change an IP, copy the new VHDL here as well. The testbench can also be run in the Vivado simulator (add the files, set \code{tb\_chain} as top, put \code{a\_b.hex} in the simulation run directory).
+
+\subsection{Reference results (October 2026)}
+\begin{tabularx}{\textwidth}{@{}Yl@{}}
+\toprule
+\textbf{Test} & \textbf{Result} \\
+\midrule
+HLS C simulation, 2 complete matrices & PASS \\
+HLS C/RTL co-simulation, $2\times100$ blocks & PASS, $\approx$78 cycles per block \\
+\code{RAM\_INTERFACE} synthesis at 100\,MHz & 7.3\,ns estimated (Fmax $\approx$137\,MHz) \\
+GHDL, test data / random 64-bit / slow writer & PASS / PASS / PASS \\
+PL run time for one $50\times50$ product (GHDL) & 101\,008 cycles $\approx$ 1.01\,ms at 100\,MHz \\
+Board run & not yet done at the time of writing \\
+\bottomrule
+\end{tabularx}
+
+% ==================================================================
+\section{Known pitfalls}
+% ==================================================================
+\begin{longtable}{@{}p{0.33\textwidth}p{0.62\textwidth}@{}}
+\toprule
+\textbf{Pitfall} & \textbf{What to do} \\
+\midrule
+\endhead
+Wrong tool version & Only 2025.1.1. Other versions lock every IP and offer upgrades you do not want. \\
+Project not at \code{C:\bs PLD} & Absolute paths break. Move it back rather than editing paths. \\
+Upgrade offered to an older IP revision & Do not accept it; find out why the repository holds an older version. \\
+\code{RAM\_INTERFACE\_0} locked after \code{build\_ip.bat} & Expected: a new HLS build has a new revision. Run \code{2b\_upgrade\_after\_rebuild.tcl}. \\
+Co-simulation refuses to start (\code{COSIM 212-345}) & You ran co-simulation with \code{hls\_config.cfg}. Use \code{run\_cosim.bat}. \\
+Edit lost in \code{helloworld.c} & Vitis had the file open. Close files in the IDE before editing them elsewhere. \\
+Old bitstream on the board & Check the date of \code{\_ide\bs bitstream\bs interrupt\_rerun.bit} after updating the platform. \\
+No serial output & Wrong COM port (use the lowest of the four), wrong baud rate, or the CP210x driver is missing. \\
+JTAG busy / board not found in Vitis & Close Vivado's Hardware Manager; check SW6 and the JTAG cable. \\
+Licence error during synthesis, or ``Multiple block runs Failed'' after \emph{Generate Output Products} & This PC has no licence for the \code{xczu9eg}. Build on the licensed PC (Section~\ref{sec:licence}). \\
+Extra IP repository in the project (e.g.\ \code{Cezar\_repo}) & Remove it (Section~\ref{sec:firstsetup}, step~3). Only \pld{ip\_repo} is needed. \\
+\bottomrule
+\end{longtable}
+
+% ==================================================================
+\section{Handing the project over}
+% ==================================================================
+\begin{enumerate}[noitemsep]
+  \item Close Vivado and Vitis.
+  \item Zip the complete \code{C:\bs PLD} folder with 7-Zip. To save space you may leave out folders that are regenerated automatically: \code{S7\_integration\bs S7\_integration.runs}, \code{S7\_integration\bs S7\_integration.cache}, \code{hls\bs RAM\_INTERFACE\bs work}, \code{hls\bs RAM\_INTERFACE\bs work\_cosim} and the Vitis \code{build} folders. Keep everything else, including \code{S7\_integration.gen} and \code{backup}.
+  \item Update this guide and the project log with what you changed, and note the board results.
+  \item Tell the next group who holds the licence and on which PC.
+\end{enumerate}
+
+% ==================================================================
+\section{More information}\label{sec:moreinfo}
+% ==================================================================
+\begin{itemize}[noitemsep]
+  \item \pld{report\bs previous\_group\_analysis.tex} -- analysis of the original design: data flow, cycle and resource budgets, bottlenecks and proposed improvements (burst transfers, removing wait states, data reuse).
+  \item \pld{report\bs project\_log\_kai\_janssen.tex} -- chronological log of the take-over, with all decisions and test results.
+  \item \pld{README\_UPGRADE.md} -- the October 2026 plan for restoring the two IPs.
+  \item \pld{sim\bs README.md} -- details of the GHDL testbench.
+\end{itemize}
+
+\end{document}

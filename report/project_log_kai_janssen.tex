@@ -1,0 +1,345 @@
+\documentclass[11pt,a4paper]{article}
+
+% ------------------------------------------------------------------
+% Packages
+% ------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black}
+
+\definecolor{codebg}{gray}{0.96}
+\definecolor{okgreen}{RGB}{0,120,60}
+\definecolor{warnorange}{RGB}{200,110,0}
+\definecolor{errred}{RGB}{180,30,30}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{gray!40},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false
+}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\ok}{\textcolor{okgreen}{\textbf{Done}}}
+\newcommand{\open}{\textcolor{warnorange}{\textbf{Open}}}
+\newcommand{\blocked}{\textcolor{errred}{\textbf{Blocked}}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\setlength{\emergencystretch}{3em}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small TeraNova -- FPGA Acceleration}
+\rhead{\small Project log -- K.~Janssen (4994817)}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+% ------------------------------------------------------------------
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\LARGE\bfseries Project Log\par}
+\vspace{0.5cm}
+{\Large Continuing the FPGA Matrix-Multiplication Accelerator\par}
+\vspace{0.3cm}
+{\large TeraNova -- FPGA Acceleration\par}
+\vspace{2cm}
+\begin{tabular}{@{}ll@{}}
+\textbf{Author}          & Kai Janssen \\
+\textbf{Student number}  & 4994817 \\
+\textbf{Period covered}  & 30 September -- 7 October 2026 \\
+\textbf{Platform}        & AMD ZCU102 (Zynq UltraScale+ \code{xczu9eg-ffvb1156-2-e}) \\
+\textbf{Tools}           & Vivado / Vitis / Vitis HLS 2025.1.1 \\
+\end{tabular}
+\vfill
+{\large \today\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ==================================================================
+\section{Purpose and scope}
+% ==================================================================
+This log records the work I carried out to take over the FPGA matrix-multiplication accelerator developed by the previous project group. The overall project goal is to determine whether moving the inverse-scattering calculations of TeraNova's metrology system to the FPGA, and accelerating them in hardware, improves the run time of the system. The work in this period focused on:
+\begin{enumerate}[noitemsep]
+  \item reproducing the previous group's Vivado and Vitis projects on my own PC;
+  \item analysing their design and identifying its bottlenecks;
+  \item restoring two IP cores that were missing from the hand-over, and making the PS--PL interaction robust;
+  \item preparing a new hardware build.
+\end{enumerate}
+
+All work was done in the workspace \code{C:\textbackslash PLD}; the files received from the previous group are kept unchanged in a separate folder.
+
+% ==================================================================
+\section{Status summary}
+% ==================================================================
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{@{}Yl@{}}
+\toprule
+\textbf{Item} & \textbf{Status} \\
+\midrule
+Vivado project opens in 2025.1.1 & \ok \\
+Vitis platform and application build without errors or warnings & \ok \\
+Interrupt handling in the application completed & \ok{} (not yet tested on board) \\
+Analysis of the previous design and report & \ok \\
+\code{RAM\_INTERFACE} rewritten (HLS), synthesised for \code{xczu9eg} and packaged & \ok \\
+\code{matrix\_partitioner\_B} recovered and re-packaged & \ok \\
+Block design updated to the latest IP builds, validated without errors & \ok \\
+RTL (GHDL), HLS C and C/RTL co-simulation of the new data path & \ok \\
+Updated application compiled (against the old hardware export) & \ok \\
+Unused IP repository \code{Cezar\_repo} removed; all 148 IPs up to date & \ok \\
+Bitstream and hardware export (\code{.xsa}) & \blocked{} (licence) \\
+Test on the ZCU102 & \open{} (board and licence pending) \\
+\bottomrule
+\end{tabularx}
+\caption{Status at the end of the logged period.}
+\end{table}
+
+% ==================================================================
+\section{Chronological log}
+% ==================================================================
+
+% ------------------------------------------------------------------
+\subsection{30 September 2026 -- Setup of the received project}
+% ------------------------------------------------------------------
+\textbf{Received files.} The previous group handed over (via Teams): the Vivado project \code{S7\_integration.zip} (1.27\,GB), the Vitis workspace \code{S7\_integration\_vit.zip}, five packaged IP cores, the HLS source of the DDR interface and a short README. The README stated that the project depends on the path \code{C:/PLD/s7\_integration}, that the interrupt never worked, and that Vivado/Vitis 2025.1.1 was used.
+
+\textbf{Workspace.} I created \code{C:\textbackslash PLD} as workspace so that the absolute paths inside the projects remain valid, and extracted the Vivado project with 7-Zip to \code{C:\textbackslash PLD\textbackslash S7\_integration}.
+
+\textbf{Identification of the contents.} Inspection of the archives showed that the target is a Zynq UltraScale+ ZCU102 board (\code{xczu9eg}), not a Spartan-7 as the name ``S7'' suggested. The five IP archives turned out to be: \code{RAM\_INTERFACE} (HLS), \code{MatMul5x5\_Acc}, \code{MatMul5x5\_PAR\_IF}, \code{matrix\_partitioner\_B} and an older, unused \code{matrix\_partitioner}.
+
+\textbf{IP repositories.} From the project file I determined that Vivado expects IP repositories at \code{../ip\_repo} and \code{../Cezar\_repo}. I placed each IP in its own subfolder of \code{C:\textbackslash PLD\textbackslash ip\_repo} (two of the archives used the same folder name and would otherwise have overwritten each other) and created an empty placeholder \code{Cezar\_repo} (removed again on 7 October, see Stage~8).
+
+\textbf{Problem 1 -- tool version.} On opening, every IP in the block design was locked with status ``Newer software version''. The cause was that I had Vivado 2025.1 installed, while the project was created in 2025.1.1. I installed 2025.1.1 (with Zynq UltraScale+ MPSoC device support and cable drivers) in \code{C:\textbackslash Xilinx\textbackslash 2025.1.1}. Afterwards 143 of the 145 IPs were up to date.
+
+\textbf{Problem 2 -- outdated IP in the hand-over.} \code{RAM\_INTERFACE} and \code{matrix\_partitioner\_B} remained locked with ``IP revision change''. The recommended version was \emph{older} than the one in the design (e.g.\ partitioner Rev.~3 in the design versus Rev.~1 in the archive). By comparing with the copies Vivado keeps in \code{S7\_integration.gen/.../ipshared}, I confirmed that the handed-over archives were outdated. ``Upgrade IP'' would therefore have downgraded the design, so I did not use it.
+
+\textbf{Vitis workspace.} I extracted \code{S7\_integration\_vit.zip} to \code{C:\textbackslash PLD\textbackslash S7\_integration\_vit} and opened it in the Vitis Unified IDE. The build files showed that the previous group used exactly the same paths, so no path changes were needed. Platform \code{interrupt\_rerun\_plat} and application \code{interrupt\_rerun\_test} both built successfully. I selected ``Always build platform with application'' (workspace preference).
+
+\textbf{Interrupt fix.} Reading \code{helloworld.c} showed why the interrupt never worked: the GIC was configured and the handler connected, but the processor's exception system was never set up. I added \code{XScuGic\_SetPriorityTriggerType()}, \code{Xil\_ExceptionInit()}, \code{Xil\_ExceptionRegisterHandler()} and \code{Xil\_ExceptionEnable()}, plus a check of the connect status. I also removed the two remaining compiler warnings. The original file was kept in \code{S7\_integration\_vit\textbackslash backup}. The application built without warnings.
+
+\textit{Lesson learned:} one edit was lost because Vitis still had the file open and saved its older copy over the change. Files must be closed in the IDE before they are modified outside it.
+
+% ------------------------------------------------------------------
+\subsection{30 September 2026 -- Analysis of the previous design}
+% ------------------------------------------------------------------
+I analysed the HDL, HLS and C sources, the block design, and the timing and utilisation reports of the previous build. The design multiplies two $50\times50$ matrices of 64-bit integers in $5\times5$ blocks:
+\begin{enumerate}[noitemsep]
+  \item the CPU writes A and B into block RAM as 10\,000 single 32-bit transactions;
+  \item \code{matrix\_partitioner\_B} reads the blocks element by element (4 clock cycles per element);
+  \item \code{MatMul5x5} multiplies two blocks in one clock cycle (1\,257 DSPs);
+  \item an accumulator sums 10 partial products per output block;
+  \item \code{RAM\_INTERFACE} writes the results to the PL-side DDR4, from where the CPU reads them back one by one.
+\end{enumerate}
+
+\textbf{Main finding.} The design is dominated by data movement. Fetching one block pair takes about 100 cycles while multiplying it takes about 5, so the compute unit is idle about 95\,\% of the time. I estimated the end-to-end run at roughly 2.5--4\,ms, and estimated that the proposed improvements (burst transfers instead of CPU single writes, removing the partitioner's wait states, banked memory, data reuse, a narrower pipelined multiplier) could reduce this to roughly 30--50\,\textmu s. I also noted that the current accelerator is probably slower than a CPU-only implementation, and that the gain grows with matrix size.
+
+\textbf{Deliverable.} A full report (\code{previous\_group\_analysis.tex}, saved in \code{C:\textbackslash PLD\textbackslash report}) with 14 numbered findings, cycle and resource budgets, proposed improvements and expected speed-ups. All figures in it are estimates pending measurements on the board.
+
+% ------------------------------------------------------------------
+\subsection{2 October 2026 -- Restoring the two IP cores}
+% ------------------------------------------------------------------
+\textbf{Decision.} Two options were considered: (A) re-package the generated HDL found in the project, or (B) rebuild the IPs from source. I chose \textbf{option B}, because:
+\begin{itemize}[noitemsep]
+  \item it gives the group editable source code instead of opaque generated HDL;
+  \item the improvement plan requires changing \code{RAM\_INTERFACE} anyway;
+  \item the old \code{RAM\_INTERFACE} handshake (plain \code{ap\_none} wires on a free-running block) was not a proper protocol and could capture a result block twice or miss one.
+\end{itemize}
+
+\textbf{\code{RAM\_INTERFACE} (rewritten in HLS).}
+\begin{itemize}[noitemsep]
+  \item Input is now an \code{hls::stream} with an \code{ap\_fifo} interface; this maps directly onto the accumulator's existing valid/ready signals (\code{C\_valid} $\rightarrow$ \code{data\_empty\_n}, \code{C\_ready} $\leftarrow$ \code{data\_read}).
+  \item Elements are extracted with \code{.range()} instead of a C union; the inner loop is pipelined (II=1).
+  \item \code{done} rises only after all writes of the last block are complete.
+\end{itemize}
+
+\textbf{\code{matrix\_partitioner\_B}.} The newest VHDL was recovered from the project's \code{ipshared} folder. Its ports are identical to the archived version, so it only needed re-packaging with core revision 4.
+
+\textbf{Application update (\code{helloworld.c}).} Separate timing of BRAM load, PL compute, result read-back and CPU-only reference; a 1-second timeout with a GPIO fallback so the program can never hang silently; the start signal is now a toggle so the design can be run repeatedly; two complete runs per execution; build optimisation changed from \code{-O0} to \code{-O2}.
+
+\textbf{Verification (without hardware).}
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{@{}Yl@{}}
+\toprule
+\textbf{Test} & \textbf{Result} \\
+\midrule
+HLS C simulation of \code{RAM\_INTERFACE}: two complete matrices, full 64-bit values & PASS \\
+RTL simulation (GHDL) of the full PL path, test data from \code{helloworld.c} & PASS \\
+RTL simulation, random full-range 64-bit data & PASS \\
+RTL simulation with a slow writer (back-pressure, 1\,500 cycles/block) & PASS, no lost or duplicate blocks \\
+Measured PL run time in simulation & 101\,008 cycles ($\approx$1.01\,ms at 100\,MHz) \\
+\bottomrule
+\end{tabularx}
+\caption{Verification results.}
+\end{table}
+
+\textbf{Files delivered} to \code{C:\textbackslash PLD}: \code{hls\textbackslash RAM\_INTERFACE} (source, testbench, \code{build\_ip.bat}), \code{scripts} (three Vivado Tcl scripts), \code{sim} (GHDL testbench), the updated application and \code{README\_UPGRADE.md}. All replaced files were backed up first.
+
+% ------------------------------------------------------------------
+\subsection{2 October 2026 -- Building the IP and updating the block design}
+% ------------------------------------------------------------------
+\begin{enumerate}
+  \item \code{build\_ip.bat} completed: the new \code{RAM\_INTERFACE} (core revision 2114811662) was installed in \code{C:\textbackslash PLD\textbackslash ip\_repo\textbackslash RAM\_INTERFACE} with the expected ports.
+  \item \code{1\_repackage\_partitioner.tcl} and \code{2\_update\_block\_design.tcl} were run in the Vivado Tcl console.
+  \item Result: \textbf{all 145 IPs up to date}, nothing locked. I verified the saved block design: the stream handshake, \code{done} (interrupt, GPIO channel 2 and ILA), clock, reset, base address and the AXI connection to the DDR4 are all connected as intended, and the address map is unchanged (PL DDR4 at \code{0x4\_0000\_0000}).
+\end{enumerate}
+
+% ------------------------------------------------------------------
+\subsection{4 October 2026 -- Hardware build attempt}
+% ------------------------------------------------------------------
+I ran \code{3\_build\_and\_export.tcl}. Generating the block design output products succeeded, but all synthesis runs stopped with:
+\begin{lstlisting}
+ERROR: [Common 17-345] A valid license was not found for feature
+'Synthesis' and/or device 'xczu9eg'.
+\end{lstlisting}
+The free Vivado edition does not cover the ZU9EG; synthesis, implementation and bitstream generation for this device require a licence. Steps that do not need a licence (HLS, block-design editing, simulation, Vitis software builds, programming the board) all worked. The separate message ``Failed to create directory 'C'\,'' appeared at start-up but did not stop the run. The width-mismatch critical warnings in the log were already present in the previous group's design and are harmless.
+
+The group's licence is \textbf{node-locked} and registered to one group member. The options identified are: remote access to the licensed PC, having the licence holder run the build script on a copy of \code{C:\textbackslash PLD}, or re-hosting the licence to a shared build PC. A new build is only needed when the hardware changes; software changes never need one.
+
+% ------------------------------------------------------------------
+\subsection{7 October 2026 -- Pre-build work while waiting for the licence}
+% ------------------------------------------------------------------
+While the licence for the ZCU102 is being set up, I listed which steps of the plan do not need it and carried them out in order. Only synthesis/implementation/bitstream for the \code{xczu9eg}, the Vitis platform update (needs the new \code{.xsa}) and the board run remain blocked.
+
+\textbf{Stage 1 -- Backup.} Before changing the projects, I copied \code{S7\_integration} and \code{S7\_integration\_vit} to \code{C:\textbackslash PLD\textbackslash backup\textbackslash S7\_integration\_2026-10-07} and \code{\ldots\textbackslash S7\_integration\_vit\_2026-10-07}.
+
+\textbf{Stage 2 -- HLS build of \code{RAM\_INTERFACE}.} \code{build\_ip.bat} ran to completion (log in \code{hls\textbackslash RAM\_INTERFACE\textbackslash build\_log.txt}). Contrary to expectation, Vitis HLS C synthesis for the \code{xczu9eg} did \emph{not} need the licence.
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{@{}Yl@{}}
+\toprule
+\textbf{Item} & \textbf{Result} \\
+\midrule
+C simulation (2 complete matrices) & PASS, 0 errors \\
+Timing, 100\,MHz target (10\,ns) & 7.30\,ns estimated; Fmax $\approx$ 137\,MHz \\
+Main loop \code{ROWS\_COLS} & pipelined, II = 1 \\
+Latency per $5\times5$ block (estimate) & 41 cycles (0.41\,\textmu s) \\
+Resources & 2\,708 FF, 1\,943 LUT, 2 DSP, 0 BRAM ($<$1\,\%) \\
+Packaging and installation & IP installed in \code{ip\_repo\textbackslash RAM\_INTERFACE} \\
+\bottomrule
+\end{tabularx}
+\caption{HLS results of the rebuilt \code{RAM\_INTERFACE}.}
+\end{table}
+The remaining warnings are harmless: one about variable-indexed range selection (\code{.range()}), power-on initialisation of the three static registers, and that \code{done} (\code{ap\_none}) cannot be checked automatically by co-simulation.
+
+\textbf{Stage 3 -- C/RTL co-simulation.} The first attempt failed before simulating:
+\begin{lstlisting}
+ERROR: [COSIM 212-345] Cosim only supports the following 'ap_ctrl_none'
+designs: (1) combinational designs; (2) pipelined design with II of 1;
+(3) designs with array streaming or hls_stream or AXI4 stream ports.
+\end{lstlisting}
+This is a tool limitation, not a design error: \code{RAM\_INTERFACE} is free-running (\code{ap\_ctrl\_none}), takes several cycles per block and writes through \code{m\_axi}. To still verify the generated RTL, I added a co-simulation-only build: \code{RAM\_INTERFACE.cpp} selects \code{ap\_ctrl\_hs} when the macro \code{COSIM\_HS} is defined (otherwise \code{ap\_ctrl\_none}, so the packaged IP is unchanged), and the new \code{hls\_config\_cosim.cfg} sets \code{-DCOSIM\_HS} and uses its own work folder (\code{work\_cosim}). \code{run\_cosim.bat} runs synthesis and co-simulation of this variant.
+
+Result: \textbf{C/RTL co-simulation PASS} -- all $2\times100$ blocks written correctly by the generated RTL in xsim, and the \code{done} check passed. The simulated time per block was about 780\,ns ($\approx$78 cycles instead of the 41 estimated, because of waiting for AXI write responses), i.e.\ about 7.8\,\textmu s to write a complete $50\times50$ result.
+
+\textbf{Stage 4 -- Re-packaging the partitioner.} \code{1\_repackage\_partitioner.tcl} ran without errors (integrity check passed). It reported ``Old core revision: 4'': the re-packaging had already been applied on 2 October, so the run only re-saved the same revision.
+
+\textbf{Stage 5 -- Block design.} Before running \code{2\_update\_block\_design.tcl} I inspected the saved block design. It already contained everything that script does (partitioner revision 4; the new \code{RAM\_INTERFACE} ports wired to the accumulator; \code{done} to GPIO, interrupt and ILA; \code{m\_axi\_gmem} to \code{axi\_smc/S01\_AXI}; address segment at \code{0x4\_0000\_0000}, 512\,MB). Re-running it would delete and recreate a correctly wired cell, so I did not run it. The only issue was that \code{RAM\_INTERFACE\_0} showed as \emph{locked}, because today's HLS build has a new core revision. As the ports are identical, I wrote \code{2b\_upgrade\_after\_rebuild.tcl}, which only upgrades the two IPs, validates and saves. Result:
+\begin{itemize}[noitemsep]
+  \item \code{RAM\_INTERFACE\_0} upgraded from revision 2114811662 to 2114818764;
+  \item \code{validate\_bd\_design}: no errors (only the known SmartConnect, AWUSER/ARUSER width and debug-net warnings);
+  \item checked in the saved \code{accu\_to\_DDR.bd}: all \code{RAM\_INTERFACE\_0} connections and the address segment unchanged.
+\end{itemize}
+
+\textbf{Stage 6 -- Application build.} The updated \code{helloworld.c} (from 2 October) had not been built yet. I built \code{interrupt\_rerun\_test} in Vitis against the existing (old) platform: \textbf{build successful}, no errors (text 93\,748\,B, data 9\,576\,B, bss 582\,128\,B). The code only uses hardware names that remain the same in the new design, so it is expected to build unchanged against the new \code{.xsa}.
+
+\textbf{Stage 7 -- Board bring-up preparation.} None of these steps needs the licence, but most need the board. Possible now: installing the JTAG cable drivers and the Silicon Labs CP210x USB-UART driver, and preparing a serial terminal profile (115\,200 baud, 8N1, no flow control). With the board: check that four CP210x COM ports appear (the lowest is PS UART0), set SW6 to JTAG boot (all ON), and check that the Hardware Manager detects the \code{xczu9eg}.
+
+\textbf{Stage 8 -- Removing the unused IP repository.} The project still listed \code{../Cezar\_repo} as a second IP repository. No IP in the block design came from it; the folder only held my placeholder README. In the Vivado Tcl console:
+\begin{lstlisting}
+set_property ip_repo_paths C:/PLD/ip_repo [current_project]
+update_ip_catalog
+\end{lstlisting}
+Vivado then loaded only \code{c:/PLD/ip\_repo}. I checked the saved \code{S7\_integration.xpr} (only one \code{IPRepoPath} left), searched the project file, block design, IP configuration files and scripts for remaining references to the folder (none; the hierarchy block \code{Cezars\_pin\_paradise} only shares the name and is unrelated), and then deleted \code{C:\textbackslash PLD\textbackslash Cezar\_repo}. \code{report\_ip\_status} afterwards: \textbf{148 IPs, all up to date}, none locked. Three Constant IPs inside the SmartConnects are marked ``Up-to-date (discontinued)'', which needs no action. The four custom IPs (\code{MatMul5x5\_Acc} Rev.~4, \code{MatMul5x5\_PAR\_IF} Rev.~2, \code{matrix\_partitioner\_B} Rev.~4, \code{RAM\_INTERFACE} Rev.~2114818764) are all found in \code{ip\_repo}.
+
+\textbf{Stage 9 -- Generate Output Products (licence check).} On opening the project, Vivado warned that the generated files of \code{accu\_to\_DDR\_axi\_smc\_0} were missing. I ran \emph{Generate Output Products} (out of context per IP, 12 jobs). Three out-of-context runs failed with \code{[Common 17-345] A valid license was not found for feature 'Synthesis' and/or device 'xczu9eg'}: \code{accu\_to\_DDR\_axi\_smc\_0}, \code{accu\_to\_DDR\_matrix\_partitioner\_B\_0\_0} and \code{accu\_to\_DDR\_RAM\_INTERFACE\_0\_1}. These are exactly the IPs without a cached synthesis result (the two rebuilt IPs and the SmartConnect affected by the upgrade); all others were reused from the cache. This confirms the 4 October finding: on my PC, even generating output products needs the licence. It is not related to Stage~8. The runs will be redone by \code{3\_build\_and\_export.tcl} on the licensed PC.
+
+Generation also gave twelve \code{[BD 41-2383] Width mismatch} critical warnings: six connections, each reported by validation and again by generation. They concern the address path of the previous group's design: partitioner \code{bram\_addr\_A/B} (12 bits) $\rightarrow$ \code{mult\_gen\_*/A} (18 bits), and \code{mult\_gen\_*/P} (21 bits) $\rightarrow$ \code{Part0..3/addrb} (32 bits). In every case the narrower side covers the full address range (12 bits = 4096 values for 2500 elements per matrix), and the unconnected upper bits are tied to 0 in synthesis. They are harmless and were not caused by the upgrade.
+
+% ==================================================================
+\section{Files created and modified}
+% ==================================================================
+\begin{longtable}{@{}p{0.48\textwidth}p{0.47\textwidth}@{}}
+\toprule
+\textbf{Path (under \code{C:\textbackslash PLD})} & \textbf{Content} \\
+\midrule
+\endhead
+\code{ip\_repo\textbackslash *} & IP repository (5 IPs, one folder each) \\
+\code{Cezar\_repo\textbackslash README.txt} & Placeholder for the missing repository; folder deleted and removed from the project on 7 Oct \\
+\code{S7\_integration\textbackslash S7\_integration.xpr} & IP repository list reduced to \code{../ip\_repo} (7 Oct) \\
+\code{hls\textbackslash RAM\_INTERFACE\textbackslash *} & Rewritten HLS source, testbench, config, build script \\
+\code{hls\textbackslash RAM\_INTERFACE\textbackslash}\allowbreak\code{hls\_config\_cosim.cfg}, \code{run\_cosim.bat} & Co-simulation build (\code{ap\_ctrl\_hs} via \code{COSIM\_HS}), 7 Oct \\
+\code{hls\textbackslash RAM\_INTERFACE\textbackslash}\allowbreak\code{build\_log.txt}, \code{cosim\_log.txt} & Logs of the 7 Oct HLS build and co-simulation \\
+\code{ip\_repo\textbackslash matrix\_partitioner\_B\textbackslash *.vhd} & Newest partitioner VHDL (revision 4) \\
+\code{scripts\textbackslash 1\_ \ldots\ 3\_*.tcl} & Re-package, block-design update, build and export \\
+\code{scripts\textbackslash 2b\_upgrade\_after\_rebuild.tcl} & Upgrade-only update after an IP rebuild (7 Oct) \\
+\code{sim\textbackslash *} & GHDL testbench of the complete PL data path \\
+\code{S7\_integration\_vit\textbackslash}\allowbreak\code{\ldots\textbackslash src\textbackslash helloworld.c} & Updated application \\
+\code{S7\_integration\_vit\textbackslash}\allowbreak\code{\ldots\textbackslash src\textbackslash UserConfig.cmake} & Optimisation \code{-O0} $\rightarrow$ \code{-O2} \\
+\code{report\textbackslash previous\_group\_analysis.tex} & Analysis report of the previous design \\
+\code{README\_UPGRADE.md} & Step-by-step upgrade guide \\
+\midrule
+\code{backup\textbackslash *} & Old partitioner VHDL and \code{RAM\_INTERFACE} IP \\
+\code{backup\textbackslash S7\_integration*\_2026-10-07} & Full copies of the Vivado project and Vitis workspace (7 Oct) \\
+\code{S7\_integration\_vit\textbackslash backup\textbackslash *} & Original and pre-upgrade application files \\
+\bottomrule
+\end{longtable}
+
+% ==================================================================
+\section{Key decisions}
+% ==================================================================
+\begin{longtable}{@{}p{0.3\textwidth}p{0.65\textwidth}@{}}
+\toprule
+\textbf{Decision} & \textbf{Rationale} \\
+\midrule
+\endhead
+Workspace at \code{C:\textbackslash PLD} & Keeps the previous group's absolute paths valid without editing project files. \\
+Install Vivado 2025.1.1 & Exact version match prevents IP locking and upgrade issues. \\
+Do not use ``Upgrade IP'' for the two locked IPs & The offered version was older than the design's; upgrading would have downgraded the hardware. \\
+Rebuild \code{RAM\_INTERFACE} from source (option B) & Editable code, a correct handshake, and a starting point for the planned improvements. \\
+Verify by simulation before building & Hardware builds are long and currently licence-bound; simulation catches functional errors cheaply. \\
+Co-simulate a separate \code{ap\_ctrl\_hs} variant & Co-simulation does not support this \code{ap\_ctrl\_none} design; a macro-selected variant verifies the same data path and \code{m\_axi} writes without changing the packaged IP. \\
+Do not re-run \code{2\_update\_block\_design.tcl}; use an upgrade-only script & The block design was already rewired; only the IP revision changed, and an upgrade keeps the existing connections. \\
+Remove \code{Cezar\_repo} from the project & No IP came from it; a second, empty repository only adds a source of confusion and a risk of picking up stale IP versions later. \\
+\bottomrule
+\end{longtable}
+
+% ==================================================================
+\section{Open issues and next steps}
+% ==================================================================
+\begin{enumerate}
+  \item \textbf{Build}: run \code{3\_build\_and\_export.tcl} on the PC holding the node-locked licence; this also regenerates the three out-of-context runs that failed on my PC (Stage~9). Check that the worst negative slack is $\geq 0$; obtain \code{interrupt\_rerun.xsa}.
+  \item \textbf{Vitis}: switch the platform to the new \code{.xsa} and rebuild platform and application.
+  \item \textbf{Board preparation}: install the JTAG and CP210x drivers now; once the board is available, check the COM ports, set SW6 to JTAG and test the JTAG connection in the Hardware Manager.
+  \item \textbf{Board test}: run on the ZCU102 (JTAG + UART at 115\,200 baud); expected output ends with \code{ALL RUNS PASSED}.
+  \item \textbf{Measure}: BRAM load time, PL compute time, read-back time and CPU-only time, to replace the estimates in the analysis report.
+  \item \textbf{Improve}: start with the low-effort changes (partitioner wait states), then the burst-based data path.
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,40 @@
+# Additional clean files
+cmake_minimum_required(VERSION 3.16)
+
+if("${CONFIG}" STREQUAL "" OR "${CONFIG}" STREQUAL "")
+  file(REMOVE_RECURSE
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\sleep.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xfpga_config.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xilfpga.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xilfpga_pcap.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xilfpga_pcap_common.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xilskey_bbramps_zynqmp_hw.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xilskey_bsp_config.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xilskey_eps_zynqmp.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xilskey_eps_zynqmp_hw.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xilskey_eps_zynqmp_puf.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xilskey_utils.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xiltimer.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_aes.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_aes_hw.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_aesalginfo.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_config.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_cryptochk.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_rsa.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_rsa_core.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_rsa_hw.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_rsaalginfo.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_sha.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_sha3alginfo.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_sha_hw.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_sss.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_utils.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xsecure_ver.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\include\\xtimer_config.h"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\lib\\libxilfpga.a"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\lib\\libxilsecure.a"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\lib\\libxilskey.a"
+  "C:\\PLD\\S7_integration_vit\\interrupt_rerun_plat\\zynqmp_pmufw\\zynqmp_pmufw_bsp\\lib\\libxiltimer.a"
+  )
+endif()

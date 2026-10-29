@@ -1,0 +1,6 @@
+
+Family       : zynquplus
+Device       : xczu9eg
+Package      : -ffvb1156
+Speed Grade  : -2-e
+Clock Period : 10
