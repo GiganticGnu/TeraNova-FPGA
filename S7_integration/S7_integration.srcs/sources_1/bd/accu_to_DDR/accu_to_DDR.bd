@@ -3821,7 +3821,7 @@
       },
       "matrix_partitioner_B_0": {
         "vlnv": "xilinx.com:user:matrix_partitioner_B:1.0",
-        "ip_revision": "4",
+        "ip_revision": "5",
         "xci_name": "accu_to_DDR_matrix_partitioner_B_0_0",
         "xci_path": "ip\\accu_to_DDR_matrix_partitioner_B_0_0\\accu_to_DDR_matrix_partitioner_B_0_0.xci",
         "inst_hier_path": "matrix_partitioner_B_0",
