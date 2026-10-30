@@ -4,7 +4,7 @@
     "xci_name": "accu_to_DDR_matrix_partitioner_B_0_0",
     "cell_name": "matrix_partitioner_B_0",
     "component_reference": "xilinx.com:user:matrix_partitioner_B:1.0",
-    "ip_revision": "5",
+    "ip_revision": "6",
     "gen_directory": "../../../../../../S7_integration.gen/sources_1/bd/accu_to_DDR/ip/accu_to_DDR_matrix_partitioner_B_0_0",
     "parameters": {
       "component_parameters": {
@@ -33,7 +33,7 @@
       },
       "runtime_parameters": {
         "IPCONTEXT": [ { "value": "IP_Integrator" } ],
-        "IPREVISION": [ { "value": "5" } ],
+        "IPREVISION": [ { "value": "6" } ],
         "MANAGED": [ { "value": "TRUE" } ],
         "OUTPUTDIR": [ { "value": "../../../../../../S7_integration.gen/sources_1/bd/accu_to_DDR/ip/accu_to_DDR_matrix_partitioner_B_0_0" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],

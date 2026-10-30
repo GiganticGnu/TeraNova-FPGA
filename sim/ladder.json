@@ -2,17 +2,29 @@
   "_comment": "Improvement ladder. Steps are applied in order and are CUMULATIVE: each step inherits the sources of the previous one and overrides only the slots it names. One step = one hardware change = one build on the board (git ref).",
   "nominal_latency": 20,
   "stress_latency": 100,
-  "testbench": ["axi_mem_model.vhd", "tb_chain_rtl.vhd"],
+  "testbench": [
+    "axi_mem_model.vhd",
+    "tb_chain_rtl.vhd"
+  ],
   "steps": [
     {
       "id": "0_baseline",
       "name": "Baseline: restored design",
       "git": "tag baseline-1",
       "sources": {
-        "multiplier":   ["MatMul5x5.vhd", "MatMul5x5_IF_IN.vhd"],
-        "accumulator":  ["MatMul5x5_Accumulator.vhd"],
-        "ports":        ["matrix_to_ports.vhd"],
-        "partitioner":  ["matrix_partitioner_B.vhd"],
+        "multiplier": [
+          "MatMul5x5.vhd",
+          "MatMul5x5_IF_IN.vhd"
+        ],
+        "accumulator": [
+          "MatMul5x5_Accumulator.vhd"
+        ],
+        "ports": [
+          "matrix_to_ports.vhd"
+        ],
+        "partitioner": [
+          "matrix_partitioner_B.vhd"
+        ],
         "ram_interface": "hls_rtl"
       }
     },
@@ -20,13 +32,29 @@
       "id": "1_partitioner_v5b",
       "name": "Partitioner v5b: pipelined fetch",
       "git": "branch partitioner-v5b",
-      "sources": { "partitioner": ["variants/matrix_partitioner_B_v5b.vhd"] }
+      "sources": {
+        "partitioner": [
+          "variants/matrix_partitioner_B_v5b.vhd"
+        ]
+      }
     },
     {
       "id": "2_writer_fix",
       "name": "Writer: overlapped write responses",
       "git": "branch writer-fix",
-      "sources": { "ram_interface": "steps/2_writer_fix/hls_rtl" }
+      "sources": {
+        "ram_interface": "steps/2_writer_fix/hls_rtl"
+      }
+    },
+    {
+      "id": "3_partitioner_v6",
+      "name": "Partitioner v6: on-chip copy, 10x reuse",
+      "git": "branch partitioner-v6",
+      "sources": {
+        "partitioner": [
+          "variants/matrix_partitioner_B_v6.vhd"
+        ]
+      }
     }
   ]
 }

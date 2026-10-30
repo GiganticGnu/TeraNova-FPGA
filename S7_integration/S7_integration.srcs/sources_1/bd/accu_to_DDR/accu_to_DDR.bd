@@ -3821,7 +3821,7 @@
       },
       "matrix_partitioner_B_0": {
         "vlnv": "xilinx.com:user:matrix_partitioner_B:1.0",
-        "ip_revision": "5",
+        "ip_revision": "6",
         "xci_name": "accu_to_DDR_matrix_partitioner_B_0_0",
         "xci_path": "ip\\accu_to_DDR_matrix_partitioner_B_0_0\\accu_to_DDR_matrix_partitioner_B_0_0.xci",
         "inst_hier_path": "matrix_partitioner_B_0",
@@ -4285,8 +4285,8 @@
           "Part2/clkb",
           "Part3/clkb",
           "axi_gpio_0/s_axi_aclk",
-          "matrix_partitioner_B_0/clk",
-          "RAM_INTERFACE_0/ap_clk"
+          "RAM_INTERFACE_0/ap_clk",
+          "matrix_partitioner_B_0/clk"
         ]
       }
     },
