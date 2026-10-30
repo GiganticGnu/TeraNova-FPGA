@@ -71,7 +71,7 @@
 \begin{tabular}{@{}ll@{}}
 \textbf{Author}          & Kai Janssen \\
 \textbf{Student number}  & 4994817 \\
-\textbf{Period covered}  & 30 September -- 29 October 2026 \\
+\textbf{Period covered}  & 30 September -- 30 October 2026 \\
 \textbf{Platform}        & AMD ZCU102 (Zynq UltraScale+ \code{xczu9eg-ffvb1156-2-e}) \\
 \textbf{Tools}           & Vivado / Vitis / Vitis HLS 2025.1.1 \\
 \end{tabular}
@@ -94,7 +94,8 @@ This log records the work I carried out to take over the FPGA matrix-multiplicat
   \item putting the project under version control (GitHub) so that both group members work on the same version;
   \item preparing the baseline measurement on the ZCU102 (measurement application and build package);
   \item simulating the complete PL data path, including the real HLS RTL, while the board was not available;
-  \item designing and simulating the first improvement: a faster \code{matrix\_partitioner\_B}.
+  \item designing and simulating the first improvement: a faster \code{matrix\_partitioner\_B};
+  \item organising all improvements as an \emph{improvement ladder} of four rungs, each simulated and prepared for the board on its own git branch.
 \end{enumerate}
 
 All work was done in the workspace \code{C:\textbackslash PLD}; the files received from the previous group are kept unchanged in a separate folder.
@@ -123,9 +124,15 @@ Baseline measurement application written and tested in software & \ok{} (not yet
 Build package and instructions for the licensed PC & \ok \\
 Simulation of the full PL path with the real \code{RAM\_INTERFACE} RTL & \ok{} (all runs PASS) \\
 Simulation report & \ok \\
-Faster partitioner (v5a, v5b) designed and simulated & \ok{} (not yet in \code{ip\_repo}) \\
-Bitstream and hardware export (\code{.xsa}) & \open{} (licence on Badr's laptop) \\
-Test and baseline measurement on the ZCU102 & \open{} (board available, build pending) \\
+Faster partitioner (v5a, v5b) designed and simulated & \ok \\
+Baseline frozen as tag \code{baseline-1} & \ok \\
+Ladder rung 1: partitioner v5b in the design (\code{partitioner-v5b}) & \ok{} (simulated, validated) \\
+Ladder rung 2: writer fix, HLS build and co-simulation (\code{writer-fix}) & \ok{} (simulated, validated) \\
+Ladder rung 3: partitioner v6 in the design (\code{partitioner-v6}) & \ok{} (simulated, validated) \\
+Ladder rung 4: burst data path, block design and application (\code{burst-datapath}) & \ok{} (simulated, validated) \\
+Simulation report updated with the ladder; board guide per rung & \ok \\
+Bitstreams and hardware exports (\code{.xsa}) of the five rungs & \open{} (licence on Badr's laptop) \\
+Board measurement of the five rungs on the ZCU102 & \open{} (board available, builds pending) \\
 \bottomrule
 \end{tabularx}
 \caption{Status at the end of the logged period.}
@@ -401,6 +408,50 @@ All functional tests incl.\ restart & PASS & PASS & PASS \\
 
 v5b brings the PL run from 1.012\,ms to 0.272\,ms. It reaches that speed only if the result memory confirms a write within 37 cycles; above that, the result writer sets the pace for every version. The variants are not yet in \code{ip\_repo}: the hardware design is unchanged until the group decides to build one.
 
+% ------------------------------------------------------------------
+\subsection{29 October 2026 -- Baseline 1 frozen, first rung built in}
+% ------------------------------------------------------------------
+\textbf{Commit and tag.} I committed the measurement application, the new testbenches, the partitioner variants (simulation only), the simulation report and this log (\code{3c52095}, 15:20) and tagged that commit \code{baseline-1}. This is the version Badr builds for Baseline~1. My first attempt put the tag on the previous commit, because the commit step had been skipped. I deleted the tag locally and on GitHub, committed, and tagged again; the click-by-click guide now checks the commit before tagging.
+
+\textbf{Partitioner v5b.} On a new branch \code{partitioner-v5b} I put v5b into \code{ip\_repo} as core revision~5 and upgraded it in the block design with \code{scripts\textbackslash 4\_partitioner\_v5b.tcl}. The ports are unchanged, so no rewiring was needed. Validation gave no errors. Commit \code{5c49045}.
+
+\textbf{Wrong Vivado version.} Once I opened the project in Vivado 2025.1 instead of 2025.1.1 by mistake, and every IP was locked again. I closed it without saving and restored \code{ip\_repo} with \code{git restore}. Since then every script stops at once unless it runs in 2025.1.1 (it checks \code{XILINX\_VIVADO}), and it also checks that the right git branch is checked out.
+
+% ------------------------------------------------------------------
+\subsection{30 October 2026 -- The improvement ladder}
+% ------------------------------------------------------------------
+\textbf{Method.} To see the effect of each change on its own, both in simulation and later on the board, the improvements form a \emph{ladder}. Each rung adds one change on top of all earlier ones, in a fixed order, on its own git branch. The branches are stacked (\code{baseline-1} $\rightarrow$ \code{partitioner-v5b} $\rightarrow$ \code{writer-fix} $\rightarrow$ \code{partitioner-v6} $\rightarrow$ \code{burst-datapath}); none is merged into \code{main}, which stays at the baseline until all rungs have been measured. After every change \code{sim\textbackslash run\_ladder.py} simulates the whole PL data path again with the real RTL of every block, at the nominal write-response latency $L = 20$ and at $L = 100$, with two data sets and a restart without reset. The full results are in the updated simulation report.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{@{}lYrrl@{}}
+\toprule
+\textbf{Rung} & \textbf{Change} & \textbf{$L = 20$} & \textbf{$L = 100$} & \textbf{Commit} \\
+\midrule
+0 & Baseline (tag \code{baseline-1}) & 101\,186 & 101\,586 & \code{3c52095} \\
+1 & Partitioner v5b, pipelined fetch & 27\,186 & 58\,576 & \code{5c49045} \\
+2 & Writer with overlapped write responses & 27\,071 & 27\,151 & \code{70ba245} \\
+3 & Partitioner v6, on-chip copy of A and B & 10\,052 & 18\,052 & \code{b056560} \\
+4 & Burst data path through \code{S\_AXI\_HP0\_FPD} & 10\,073 & 18\,153 & \code{b99091c} \\
+\bottomrule
+\end{tabularx}
+\caption{Simulated PL run time per rung (clock cycles at 100\,MHz). All rungs pass all functional tests.}
+\end{table}
+
+\textbf{Rung 2 -- writer fix} (branch \code{writer-fix}). I rewrote \code{RAM\_INTERFACE} with an explicit burst interface (\code{hls::burst\_maxi}): per $5\times5$ block it issues the five write requests, then the 25 values, and only then collects the five responses, with up to 8 writes in flight. I ran \code{build\_ip.bat} and \code{run\_cosim.bat} (both PASS) and upgraded the IP in the block design with \code{2b\_upgrade\_after\_rebuild.tcl}. The new generated RTL was copied into the ladder (with the same \code{SIM PATCH} line as before). The writer now needs about $L + 52$ cycles per block instead of $85 + 5L$, so rung~1 keeps its speed up to $L \approx 215$ cycles instead of 37.
+
+\textbf{Rung 3 -- partitioner v6} (branch \code{partitioner-v6}). v6 copies A and B once into 25 internal banks per matrix and then reads a whole block of A and B in one cycle, so every block is fetched once instead of ten times. Same ports as revision~4, packaged as core revision~6. For this and later partitioner steps I made one generic install script (\code{install\_partitioner.tcl}, called by \code{5\_partitioner\_v6.tcl}). The run drops to 10\,052 cycles; the writer (74--75 cycles per block) is the limit again.
+
+\textbf{Rung 4 -- burst data path} (branch \code{burst-datapath}). A, B and C now live in the processor's DDR (DDR high, \code{0x8\_0000\_0000}, \code{0x8\_0000\_5000}, \code{0x8\_0000\_A000}; this region is not used by the linker script). Partitioner v7 reads A and B itself through a 128-bit AXI4 read master in bursts of up to 256 beats, and \code{RAM\_INTERFACE} writes C there; both go through a new SmartConnect into the high-performance port \code{S\_AXI\_HP0\_FPD}. For simulation I wrote an AXI4 read-slave model that also checks the protocol rules. The PL time stays at 10\,073 cycles; the gain is on the CPU side, which no longer writes 10\,000 single values into BRAMs.
+\begin{itemize}[noitemsep]
+  \item \textbf{Block design.} \code{scripts\textbackslash 6\_burst\_datapath.tcl} removes the four BRAMs, their controllers, \code{smartconnect\_0}, the two \code{mult\_gen} blocks, the two enable constants and the old partitioner. It adds v7 as an RTL module reference (\code{hdl\textbackslash partitioner\_v7.vhd}, a copy of the simulated file with interface attributes), the constants \code{A\_BASE}/\code{B\_BASE}, the SmartConnect \code{axi\_smc\_hp0}, and enables HP0 at 128 bits. The clock and the PL DDR4 controller stay as they are, so this rung only changes the data path. The GPIO address (\code{0xB000\_0000}) is unchanged.
+  \item \textbf{First run of the script failed}: Vivado does not accept a VHDL-2008 file as the top of a module reference. The file is plain-VHDL compatible (checked with GHDL), so the script now marks it as VHDL. The script also creates the new partitioner \emph{before} it removes anything, so a failure leaves the design intact. I closed without saving, restored the project file with \code{git restore S7\_integration} and ran the script again. Validation: no errors and no critical warnings. The remaining warnings (AXI user-signal widths, dangling nets of removed cells, an existing ILA clock association) were checked and are harmless.
+  \item \textbf{Application.} HP0 is not cache coherent, so the new application (\code{app\textbackslash burst\_datapath\textbackslash}\allowbreak\code{helloworld\_burst.c}) flushes A and B from the data cache before start and invalidates C after \code{done}. It reports these steps in the same CSV columns as the baseline (``load'' is now the cache flush) and in an extra \code{CSV,burst} line. It was tested against a model of a non-coherent cache: all runs pass, and without the flush the start-up buffer check fails, as it should. \code{scripts\textbackslash 6b\_app\_burst.bat} puts it into the Vitis application and removes \code{bram\_write.c/.h}, which no longer compile without BRAMs.
+\end{itemize}
+Committed and pushed as \code{b99091c}.
+
+\textbf{Documentation.} I updated the simulation report with the ladder and wrote a board guide that explains, rung by rung, how each branch is built, loaded onto the ZCU102 and measured.
+
 % ==================================================================
 \section{Files created and modified}
 % ==================================================================
@@ -434,6 +485,18 @@ v5b brings the PL run from 1.012\,ms to 0.272\,ms. It reaches that speed only if
 \code{sim\textbackslash run\_variants.py}, \code{variants\_results.json} & Simulations of the partitioner versions and their results \\
 \code{sim\textbackslash make\_figures.py}, \code{README\_perf.md} & Report figures; description of the new testbenches \\
 \code{report\textbackslash simulation\_report\textbackslash *} & Simulation report (\LaTeX{}, figures, PDF) \\
+\code{scripts\textbackslash 4\_partitioner\_v5b.tcl} & Rung 1: v5b as core revision 5 (29 Oct) \\
+\code{hls\textbackslash RAM\_INTERFACE\textbackslash}\allowbreak\code{RAM\_INTERFACE.cpp/.hpp} & Rung 2: writer with \code{hls::burst\_maxi} (30 Oct) \\
+\code{scripts\textbackslash install\_partitioner.tcl}, \code{5\_partitioner\_v6.tcl} & Rung 3: generic partitioner install; v6 as revision 6 \\
+\code{hdl\textbackslash partitioner\_v7.vhd} & Rung 4: hardware copy of partitioner v7 (module reference) \\
+\code{scripts\textbackslash 6\_burst\_datapath.tcl}, \code{6b\_app\_burst.bat} & Rung 4: block-design change; application swap \\
+\code{app\textbackslash burst\_datapath\textbackslash helloworld\_burst.c} & Rung 4: measurement application with cache maintenance \\
+\code{sim\textbackslash variants\textbackslash *\_v6.vhd}, \code{*\_v7.vhd} & Partitioners of rungs 3 and 4 \\
+\code{sim\textbackslash ladder.json}, \code{run\_ladder.py}, \code{ladder\_}\allowbreak\code{results.json}, \code{ladder.md} & Improvement ladder: definition, runner, results \\
+\code{sim\textbackslash steps\textbackslash 2\_writer\_fix\textbackslash *} & Generated RTL of the new writer for simulation \\
+\code{sim\textbackslash axi\_rd\_mem\_model.vhd}, \code{tb\_chain\_axi.vhd} & AXI4 read-slave model and testbench of rung 4 \\
+\code{sim\textbackslash make\_ladder\_figures.py} & Ladder figures for the simulation report \\
+\code{report\textbackslash TeraNova\textbackslash board\_guide\textbackslash *} & Board guide: building and measuring every rung (30 Oct) \\
 \midrule
 \code{backup\textbackslash *} & Old partitioner VHDL and \code{RAM\_INTERFACE} IP \\
 \code{backup\textbackslash S7\_integration*\_2026-10-07} & Full copies of the Vivado project and Vitis workspace (7 Oct) \\
@@ -463,13 +526,26 @@ GitHub with a sources-only \code{.gitignore} & Both members work on one history;
 Measure two baselines (old bitstream, restored design) & Baseline 0 needs no build and can be measured at once; agreement with Baseline 1 shows the restoration did not change the timing. \\
 Simulate the real HLS RTL, not only a model & The model hid the per-row write-response wait in the generated \code{RAM\_INTERFACE}. \\
 Prefer partitioner v5b over v5a & Same build effort, almost twice the gain (3.72$\times$ vs 1.98$\times$). \\
-Keep the variants out of \code{ip\_repo} for now & The hardware design stays identical to the version being measured as the baseline. \\
+Keep the variants out of \code{ip\_repo} on \code{main} & The baseline stays identical to the version being measured; each variant goes into \code{ip\_repo} only on its own branch. \\
+Improvement ladder: one change per rung, one branch per rung, no merges into \code{main} & Every change can be simulated and measured on its own, and compared with the rung before it. \\
+Scripts check the Vivado version and the git branch & Opening the project in 2025.1 locks every IP; running a script on the wrong branch would change an earlier rung. \\
+Writer fix before partitioner v6 & With v5b the writer limited the speed above $L = 37$; fixing it first makes rungs 1 and 3 independent of the unmeasured memory latency. \\
+Rung 4 keeps the 100\,MHz clock and the PL DDR4 controller & Only the data path changes, so the measured difference belongs to that change alone. \\
+Partitioner v7 as an RTL module reference, not as packaged IP & Its ports differ completely from revisions 4--6; a module reference infers the AXI master from the VHDL attributes and needs no re-packaging. \\
 \bottomrule
 \end{longtable}
 
 % ==================================================================
 \section{Open issues and next steps}
 % ==================================================================
+\emph{Status 30 October.} Items 1, 6, 7 and 9 of the list below (written on 29 October) are done: the work is committed, v5b and the writer fix are rungs 1 and 2, and the burst data path is rung 4. What remains:
+\begin{enumerate}[noitemsep]
+  \item \textbf{Builds}: Badr builds the five rungs in ladder order (\code{baseline-1}, \code{partitioner-v5b}, \code{writer-fix}, \code{partitioner-v6}, \code{burst-datapath}) and commits each \code{.xsa} to its branch, as described in the board guide. WNS must be $\geq 0$ for each.
+  \item \textbf{Board runs}: run every rung with its own application and save the logs (board guide). Replace the CPU estimates in \code{ladder.json} by the measured values and compare the PL compute times with the simulation.
+  \item \textbf{Next rungs} (after the measurements): writer with longer bursts, a second read port, a pipelined multiplier.
+  \item \textbf{Setup guide}: correct the bitstream path and refer to the board guide.
+\end{enumerate}
+\emph{List of 29 October:}
 \begin{enumerate}[noitemsep]
   \item \textbf{Commit the new work.} The baseline application, the new testbenches, the variants and the simulation report were made after the initial commit and are not yet in the repository.
   \item \textbf{Board preparation}: install the JTAG and CP210x USB-UART drivers; check that four CP210x COM ports appear (the lowest is PS UART0), set SW6 to JTAG boot (all ON) and check that the Hardware Manager detects the \code{xczu9eg}.

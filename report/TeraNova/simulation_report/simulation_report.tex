@@ -19,6 +19,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{caption}
+\usepackage{float}
 \usepackage{hyperref}
 
 \hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black}
@@ -74,7 +75,7 @@
 \begin{tabular}{@{}ll@{}}
 \textbf{Author}          & Kai Janssen \\
 \textbf{Student number}  & 4994817 \\
-\textbf{Date}            & 29 October 2026 \\
+\textbf{Date}            & 29 October 2026, updated 30 October 2026 \\
 \textbf{Platform}        & AMD ZCU102 (Zynq UltraScale+ \code{xczu9eg-ffvb1156-2-e}) \\
 \textbf{Tools}           & GHDL 4.1.0; Vitis HLS 2025.1.1 (C simulation, C/RTL co-simulation) \\
 \end{tabular}
@@ -85,6 +86,8 @@
 \begin{abstract}
 \noindent
 While the ZCU102 board is not available, I simulated every part of the accelerator that can be simulated without it. This covers the complete programmable-logic (PL) data path, from the block RAMs to the result memory, including the real RTL that Vitis HLS generated for \code{RAM\_INTERFACE}. All 96 simulation runs produce the correct $50\times50$ result: 94 GHDL runs (two data sets, a range of writer speeds and memory latencies, a restart without reset, three partitioner versions) and the two Vitis HLS simulations from 7 October. With realistic memory behaviour, one multiplication takes \textbf{101\,186 clock cycles (1.012\,ms at 100\,MHz)} on the PL. Handshake monitors confirm the main finding of the earlier analysis with exact numbers. The partitioner hands over one block pair every 101 cycles, and 50 of those cycles are wait states that do no work. The multiplier is busy only 5\,000 of 101\,008 cycles (4.95\,\%). The simulation also found one thing the analysis had not: the generated \code{RAM\_INTERFACE} waits for the write response after every 5-element burst. In steady state it needs $85 + 5L$ cycles per output block, where $L$ is the memory's write-response latency. That is harmless today, but it becomes the bottleneck once the partitioner is made faster. I simulated two faster partitioners as the first improvement. Removing the wait states halves the PL run time to 51\,186 cycles. A pipelined version that reads one element per cycle brings it to \textbf{27\,186 cycles (0.272\,ms, 3.7$\times$ faster)}. That version only reaches its speed if the memory confirms a write within 37 cycles; above that, the result writer sets the pace. The CPU side (loading the matrices and reading the result back) cannot be simulated and is left for the board measurement.
+
+\smallskip\noindent\textbf{Update 30 October.} The improvements are now simulated as an \emph{improvement ladder} (Section~\ref{sec:ladder}): every change is added on top of the previous one, in the order in which it will be built, and the whole system is simulated again after each step. Four steps take the PL run time from 101\,186 to \textbf{10\,073 cycles (0.101\,ms, 10.0$\times$)}: the pipelined partitioner (27\,186), a result writer that no longer waits for each write response (27\,071, and insensitive to the memory latency up to about 215 cycles), a partitioner that copies A and B on chip once and reuses them ten times (10\,052), and a burst data path in which the PL reads A and B from the processor's DDR itself (10\,073). The last step hardly changes the PL time; its gain is on the CPU side, which no longer has to write 10\,000 values into block RAMs one at a time. Every step passes all functional tests.
 \end{abstract}
 
 \setcounter{tocdepth}{1}
@@ -400,6 +403,76 @@ A latency of a few hundred nanoseconds is within the range a DDR4 path through a
 \end{enumerate}
 I recommend building v5b rather than v5a. It costs the same build effort and gives almost twice the gain of v5a.
 
+\emph{Update 30 October:} this has been done. v5b is core revision~5 of \code{matrix\_partitioner\_B} on the git branch \code{partitioner-v5b}, rung~1 of the improvement ladder (Section~\ref{sec:ladder}). The writer change proposed above is rung~2.
+
+
+% ==================================================================
+\section{The improvement ladder}\label{sec:ladder}
+% ==================================================================
+\subsection{Method}
+The board can only show the effect of a change if the changes are built and measured one at a time. The improvements are therefore organised as a \emph{ladder}: each rung adds one change on top of all earlier rungs, in the order in which they will be built. Every rung is a separate git branch (Table~\ref{tab:ladder}). The branch \code{main} stays at the baseline (tag \code{baseline-1}) until all rungs have been measured.
+
+After every change the complete PL data path is simulated again with \code{run\_ladder.py}. For each rung it runs four cases with the real RTL of every block: the \code{helloworld} data and random 64-bit data at the nominal write-response latency $L = 20$ cycles, a second complete run without reset, and a stress case with $L = 100$ cycles. Every case is compared with the exact $50\times50$ product. The rungs and their source files are listed in \code{ladder.json}; the results are written to \code{ladder\_results.json} and \code{ladder.md}.
+
+\subsection{Results}
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{@{}lYrrrc@{}}
+\toprule
+\textbf{Rung} & \textbf{Change (git ref)} & \textbf{$L = 20$} & \textbf{vs prev.} & \textbf{$L = 100$} & \textbf{Tests} \\
+\midrule
+0 & Baseline: restored design (\code{baseline-1}) & 101\,186 & -- & 101\,586 & \pass \\
+1 & Partitioner v5b, pipelined fetch (\code{partitioner-v5b}) & 27\,186 & 3.72$\times$ & 58\,576 & \pass \\
+2 & Writer with overlapped write responses (\code{writer-fix}) & 27\,071 & 1.00$\times$ & 27\,151 & \pass \\
+3 & Partitioner v6: on-chip copy, 10$\times$ reuse (\code{partitioner-v6}) & 10\,052 & 2.69$\times$ & 18\,052 & \pass \\
+4 & Burst data path via \code{S\_AXI\_HP0} (\code{burst-datapath}) & 10\,073 & 1.00$\times$ & 18\,153 & \pass \\
+\midrule
+ & \textbf{Rung 4 against the baseline} & \textbf{10.0$\times$} & & \textbf{5.6$\times$} & \\
+\bottomrule
+\end{tabularx}
+\caption{PL run time (start to \code{done}, clock cycles at 100\,MHz) after every rung. Each rung contains all earlier ones. The cycle counts are identical for both data sets and for the second run without reset.}
+\label{tab:ladder}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/ladder_pl.pdf}
+\caption{PL run time per rung at the nominal and the stress write-response latency. Rung~1 is the only rung whose speed depends strongly on the latency: its writer cannot keep up above $L = 37$. Rung~2 removes that dependence.}
+\label{fig:ladder}
+\end{figure}
+
+\subsection{Rung 2: the result writer}
+Section~\ref{sec:variants} showed that after rung~1 the writer sets the pace as soon as $L > 37$ cycles. The generated \code{RAM\_INTERFACE} waited for the write response of every 5-element row before it started the next row. The new version (branch \code{writer-fix}) uses an explicit burst interface (\code{hls::burst\_maxi}). It first issues the five write requests of a block, then sends the 25 values, and only then collects the five responses, with up to 8 writes in flight. It now needs about $L + 52$ cycles per output block instead of $85 + 5L$, so at rung~1's block interval of 270 cycles it keeps up until $L \approx 215$ cycles. The nominal run gains only 115 cycles, but the stress run drops from 58\,576 to 27\,151 cycles (2.16$\times$). The speed of rung~1 therefore no longer depends on a latency that has not been measured yet. The new RTL was generated by Vitis HLS and co-simulated (PASS) before it was copied into the ladder. The monitors see up to 6 writes in flight.
+
+\subsection{Rung 3: on-chip copy and reuse}
+Up to rung~2 every block of A and B is read 10 times from the external block RAMs, one element per cycle (finding F5 of the analysis report). Partitioner v6 first copies A and B \emph{once} into 25 internal memory banks per matrix (2\,500 cycles), arranged so that the 25 elements of a block are in 25 different banks. A whole block of A and of B can then be read in one cycle. The first block pair leaves the partitioner after 2\,508 cycles; from then on a pair can be ready every 6 cycles, the multiplier's pace. The run drops to 10\,052 cycles (2.69$\times$).
+
+The handshake monitors show that the writer is the limit again. It takes one output block every 74--75 cycles ($\approx L + 54$), while the multiplier and accumulator could deliver one every 60. The partitioner waits 3\,460 cycles in total for the multiplier, and the accumulator waits 1\,873 cycles for the writer. At $L = 100$ the block interval grows to 154--155 cycles, which is why the stress run takes 18\,052 cycles.
+
+\subsection{Rung 4: burst data path}
+Up to rung~3 the CPU writes A and B into four block RAMs, as 10\,000 single 32-bit writes across the PS--PL boundary, and reads the 2\,500 results back from the PL DDR4 one at a time (finding F1). In rung~4, A, B and C are in the processor's own DDR. Partitioner v7 fetches A and B itself through an AXI4 read master: 128-bit beats (two elements each), bursts of at most 256 beats that never cross a 4\,KB boundary, and up to 8 bursts in flight. A and B take 10 bursts together. \code{RAM\_INTERFACE} writes C to the same memory, and both reach it through the high-performance port \code{S\_AXI\_HP0\_FPD}.
+
+For this rung the testbench (\code{tb\_chain\_axi.vhd}) has a second memory model, \code{axi\_rd\_}\allowbreak\code{mem\_model.vhd}. It is an AXI4 read slave with a configurable read latency, and it also checks the protocol rules (16-byte beats, INCR bursts, alignment, no burst across 4\,KB). Because a beat carries two elements, loading the 2\,500 beats takes as long as loading 2\,500 element pairs from block RAM in rung~3. The PL run time is therefore almost unchanged: 10\,073 cycles (+21) at $L = 20$ and 18\,153 (+101) at $L = 100$. The read latency is paid once per burst, not once per element.
+
+\subsection{Estimated end-to-end time}
+What the user waits for is the PL run time \emph{plus} the CPU's work to move the data in and out. That CPU work cannot be simulated, so Figure~\ref{fig:e2e} uses estimates (\code{cpu\_estimates} in \code{ladder.json}). For rungs 0--3 these are 150\,ns per BRAM write and 300\,ns per PL-DDR4 read, the midpoints of the analysis report. For rung~4 they are 50\,ns per 64-byte cache line that is flushed or invalidated, plus 20\,ns per cached read. The estimates will be replaced by the latency probes and cache timings that the measurement applications print on the board.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/ladder_e2e.pdf}
+\caption{Estimated time for one multiplication including the CPU's data movement. Hatched parts are estimates, blue parts are simulated. Rungs 1--3 only shorten the PL part; rung~4 removes most of the CPU part.}
+\label{fig:e2e}
+\end{figure}
+
+With these estimates, rungs 1--3 only reduce the end-to-end time from about 3.3\,ms to 2.4\,ms, because the CPU's 10\,000 BRAM writes and 2\,500 slow reads remain. Rung~4 brings it to about 0.2\,ms, 16$\times$ less than the baseline. That is in the same range as the processor doing the whole multiplication itself, estimated at 0.1--0.2\,ms. Whether the accelerator is actually faster than the processor can therefore only be decided by the board measurement of rung~4.
+
+\subsection{What limits rung 4, and what could come next}
+\begin{itemize}[noitemsep]
+  \item \textbf{The writer} (75 cycles per output block in the compute phase): writing C in longer bursts or wider beats would let the compute phase run at the multiplier's pace of 60 cycles per block, about 1\,500 cycles less.
+  \item \textbf{Loading} (2\,529 cycles, a quarter of the run): a second read port, so that A and B are loaded in parallel, would halve it.
+  \item \textbf{The multiplier} (5 busy cycles per block pair): a pipelined multiplier that accepts a new pair every cycle is only worth building after the two points above.
+\end{itemize}
+
 % ==================================================================
 \section{Limitations}
 % ==================================================================
@@ -407,13 +480,17 @@ I recommend building v5b rather than v5a. It costs the same build effort and giv
   \item The AXI memory model is ideal apart from its fixed write-response latency. The real path has a SmartConnect, a clock-domain crossing and DDR4 refresh, so its latency varies.
   \item The BRAM model reproduces the configured read latency of 1 cycle, not the Xilinx BRAM primitive itself.
   \item The address multipliers (\code{mult\_gen}, constant $\times4$) are not in the testbench; the partitioner addresses the BRAM model directly. They have latency 0 in the design (checked in their \code{.xci} files), so they add no cycles.
-  \item Nothing here covers timing closure; that needs the licensed implementation run.
+  \item The AXI read model of rung~4 returns data at a fixed latency, one beat per cycle; the real HP port shares the DDR controller with the CPU.
+  \item The CPU parts of the end-to-end times in Section~\ref{sec:ladder} are estimates, not simulations.
+  \item Nothing here covers timing closure; that needs the licensed implementation run for every rung.
 \end{itemize}
 
 % ==================================================================
 \section{Conclusion}
 % ==================================================================
 Every part of the PL data path was simulated and gives the correct $50\times50$ result in all 96 simulation runs, including with the real HLS-generated result writer, under heavy back-pressure and after a restart without reset. One multiplication takes 101\,186 cycles, or 1.012\,ms at 100\,MHz, and this is the PL compute time the board measurement should reproduce. The handshake monitors show exactly where that time goes: the partitioner needs 101 cycles per block pair, half of them wait states, while the multiplier works 5 of those cycles. The simulation also exposed a limit in the generated \code{RAM\_INTERFACE}, a write-response wait after every row. It costs nothing today. For the first improvement I simulated two faster partitioners; the pipelined one (v5b) brings the PL run to 27\,186 cycles, 3.7$\times$ faster, with all tests passing. It reaches that speed only if the memory confirms a write within 37 cycles, so the writer should be changed next. The remaining unknowns, the CPU's loading and read-back time and the interrupt, can only be answered on the board.
+
+The improvement ladder (30 October) carries this further. Four rungs, each a separate git branch and each passing all tests, bring the PL run from 101\,186 to 10\,073 cycles (10.0$\times$): a pipelined partitioner, a writer with overlapped write responses, a partitioner that copies A and B on chip once, and a burst data path in which the PL reads A and B from the processor's DDR. The last rung matters most for the end-to-end time, because it removes the CPU's 10\,000 single BRAM writes; by estimate it brings one multiplication from about 3.3\,ms to about 0.2\,ms, which is close to what the processor needs on its own. The board measurements of the rungs, in order, will show how much of this holds in hardware.
 
 % ==================================================================
 \appendix
@@ -429,7 +506,13 @@ This compiles all sources, runs the 31 GHDL cases of the current design (about 1
 python run_perf.py hello 30        # data set, writer-model busy cycles
 python run_rtl.py random 20 0 2    # data set, B_LATENCY, W_STALL_N, RUNS
 \end{lstlisting}
-Each prints its counters as JSON. The HLS results are reproduced with \code{build\_ip.bat} and \code{run\_cosim.bat} in \code{C:\textbackslash PLD\textbackslash hls\textbackslash RAM\_INTERFACE} (no licence needed).
+Each prints its counters as JSON. The improvement ladder is run with
+\begin{lstlisting}
+python run_ladder.py                     # all rungs
+python run_ladder.py 3_partitioner_v6    # one rung (others from ladder_results.json)
+python make_ladder_figures.py            # the two ladder figures
+\end{lstlisting}
+{\sloppy The HLS results are reproduced with \code{build\_ip.bat} and \code{run\_cosim.bat} in \code{C:\textbackslash PLD\textbackslash hls\textbackslash RAM\_INTERFACE} (no licence needed).
 
 \section{Files}
 \begin{longtable}{@{}p{0.42\textwidth}p{0.53\textwidth}@{}}
@@ -447,6 +530,12 @@ Each prints its counters as JSON. The HLS results are reproduced with \code{buil
 \code{run\_variants.py}, \code{variants\_results.json} & Run the tests per partitioner version; their results \\
 \code{make\_figures.py} & Draws the report figures from the two results files \\
 \code{*.vhd} (design) & Copies of the IP sources used in the design (unchanged) \\
+\code{variants\textbackslash}\allowbreak\code{matrix\_partitioner\_B\_v6.vhd}, \code{\_v7.vhd} & Partitioners of ladder rungs 3 and 4 \\
+\code{steps\textbackslash 2\_writer\_fix\textbackslash}\allowbreak\code{hls\_rtl\textbackslash *.vhd} & Generated RTL of the new writer (rung 2, one \code{SIM PATCH} line) \\
+\code{axi\_rd\_mem\_model.vhd}, \code{tb\_chain\_axi.vhd} & AXI4 read-slave model and testbench of rung 4 \\
+\code{ladder.json}, \code{run\_ladder.py} & Definition of the rungs; runs them \\
+\code{ladder\_results.json}, \code{ladder.md} & Results of every rung; summary table \\
+\code{make\_ladder\_figures.py} & Draws the two ladder figures \\
 \bottomrule
 \end{longtable}
 
