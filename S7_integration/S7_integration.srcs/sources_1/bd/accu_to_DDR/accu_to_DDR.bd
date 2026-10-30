@@ -3134,7 +3134,7 @@
                 "value": "16"
               },
               "NUM_WRITE_OUTSTANDING": {
-                "value": "4"
+                "value": "8"
               }
             },
             "bridges": [
@@ -3829,7 +3829,7 @@
       },
       "RAM_INTERFACE_0": {
         "vlnv": "xilinx.com:hls:RAM_INTERFACE:1.0",
-        "ip_revision": "2114818764",
+        "ip_revision": "2114851766",
         "xci_name": "accu_to_DDR_RAM_INTERFACE_0_1",
         "xci_path": "ip\\accu_to_DDR_RAM_INTERFACE_0_1\\accu_to_DDR_RAM_INTERFACE_0_1.xci",
         "inst_hier_path": "RAM_INTERFACE_0",
@@ -4285,8 +4285,8 @@
           "Part2/clkb",
           "Part3/clkb",
           "axi_gpio_0/s_axi_aclk",
-          "RAM_INTERFACE_0/ap_clk",
-          "matrix_partitioner_B_0/clk"
+          "matrix_partitioner_B_0/clk",
+          "RAM_INTERFACE_0/ap_clk"
         ]
       }
     },

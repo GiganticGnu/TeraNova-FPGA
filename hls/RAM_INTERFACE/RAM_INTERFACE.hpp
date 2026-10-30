@@ -2,7 +2,17 @@
 #define RAM_INTERFACE_HPP
 
 // ---------------------------------------------------------------------------
-// RAM_INTERFACE  (rewritten 2026-10)
+// RAM_INTERFACE  (rewritten 2026-10; writer fix 2026-10-30)
+//
+// Writer fix (ladder step 2_writer_fix, branch writer-fix):
+//  * The previous version let HLS infer the bursts. HLS then waited for the
+//    AXI write response after EVERY row of a block (5 waits per block), so a
+//    block took 79 + 5L cycles (L = write-response latency) and the writer
+//    became the bottleneck once the partitioner was faster.
+//  * Now the bursts are explicit (hls::burst_maxi): the 5 row bursts of a
+//    block are requested back to back, the 25 values are streamed, and the
+//    5 write responses are collected at the end, so the waits overlap.
+//    Ports are unchanged (m_axi_gmem_*, DDR, data_*, done).
 //
 // Receives finished 5x5 output blocks (25 x 64-bit, packed in 1600 bits) from
 // the MatMul5x5 accumulator and writes them to their place in the 50x50
@@ -29,6 +39,7 @@
 #endif
 #include <ap_int.h>
 #include <hls_stream.h>
+#include <hls_burst_maxi.h>
 #include <stdint.h>
 
 #define DATA_WIDTH           64
@@ -40,6 +51,6 @@
 typedef ap_uint<DATA_WIDTH> data_t;
 typedef ap_uint<INPUT_SIZE> matrix_t;
 
-void RAM_INTERFACE(data_t *DDR, hls::stream<matrix_t> &data, bool &done);
+void RAM_INTERFACE(hls::burst_maxi<data_t> DDR, hls::stream<matrix_t> &data, bool &done);
 
 #endif // RAM_INTERFACE_HPP

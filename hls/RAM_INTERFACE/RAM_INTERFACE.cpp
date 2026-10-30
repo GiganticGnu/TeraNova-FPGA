@@ -1,9 +1,16 @@
 #include "RAM_INTERFACE.hpp"
 
 // Free-running block (ap_ctrl_none): every call consumes one 5x5 block.
-void RAM_INTERFACE(data_t *DDR, hls::stream<matrix_t> &data, bool &done) {
+//
+// Writer fix (2026-10-30): explicit AXI bursts with hls::burst_maxi.
+// The 5 rows of a block are 5 separate address ranges (a row of the 50x50
+// result is 50 values long), so a block needs 5 bursts of 5 beats. All 5
+// write requests are issued first, then the 25 data beats, and only then the
+// 5 write responses are collected. The responses therefore overlap instead
+// of being waited for one row at a time.
+void RAM_INTERFACE(hls::burst_maxi<data_t> DDR, hls::stream<matrix_t> &data, bool &done) {
 #pragma HLS INTERFACE mode=m_axi port=DDR bundle=gmem offset=direct \
-    depth=2500 max_widen_bitwidth=128 max_write_burst_length=16 num_write_outstanding=4
+    depth=2500 max_write_burst_length=16 num_write_outstanding=8
 #pragma HLS INTERFACE mode=ap_fifo port=data
 #pragma HLS INTERFACE mode=ap_none port=done
 #ifdef COSIM_HS
@@ -31,15 +38,25 @@ void RAM_INTERFACE(data_t *DDR, hls::stream<matrix_t> &data, bool &done) {
     const unsigned base = (unsigned)chunk_y * (MATRIX_SIZE * OUTPUT_MATRIX_SIZE)
                         + (unsigned)chunk_x * MATRIX_SIZE;
 
-ROWS:
+    // 1. one write request (burst of 5 beats) per row of the block
+REQUESTS:
     for (int i = 0; i < MATRIX_SIZE; ++i) {
-    COLS:
-        for (int j = 0; j < MATRIX_SIZE; ++j) {
 #pragma HLS PIPELINE II=1
-            const int e = i * MATRIX_SIZE + j;
-            DDR[base + i * OUTPUT_MATRIX_SIZE + j] =
-                block.range(DATA_WIDTH * e + DATA_WIDTH - 1, DATA_WIDTH * e);
-        }
+        DDR.write_request(base + i * OUTPUT_MATRIX_SIZE, MATRIX_SIZE);
+    }
+
+    // 2. the 25 values, row by row, in the order of the requests
+BEATS:
+    for (int e = 0; e < MATRIX_SIZE * MATRIX_SIZE; ++e) {
+#pragma HLS PIPELINE II=1
+        DDR.write(block.range(DATA_WIDTH * e + DATA_WIDTH - 1, DATA_WIDTH * e));
+    }
+
+    // 3. collect the 5 write responses (they overlap with each other)
+RESPONSES:
+    for (int i = 0; i < MATRIX_SIZE; ++i) {
+#pragma HLS PIPELINE II=1
+        DDR.write_response();
     }
 
     // Advance to the next block (column first, then row)

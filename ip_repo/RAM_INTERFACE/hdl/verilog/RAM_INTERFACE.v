@@ -6,7 +6,7 @@
 
 `timescale 1 ns / 1 ps 
 
-(* CORE_GENERATION_INFO="RAM_INTERFACE_RAM_INTERFACE,hls_ip_2025_1_1,{HLS_INPUT_TYPE=cxx,HLS_INPUT_FLOAT=0,HLS_INPUT_FIXED=0,HLS_INPUT_PART=xczu9eg-ffvb1156-2-e,HLS_INPUT_CLOCK=10.000000,HLS_INPUT_ARCH=others,HLS_SYN_CLOCK=7.300000,HLS_SYN_LAT=41,HLS_SYN_TPT=none,HLS_SYN_MEM=0,HLS_SYN_DSP=0,HLS_SYN_FF=2708,HLS_SYN_LUT=1943,HLS_VERSION=2025_1_1}" *)
+(* CORE_GENERATION_INFO="RAM_INTERFACE_RAM_INTERFACE,hls_ip_2025_1_1,{HLS_INPUT_TYPE=cxx,HLS_INPUT_FLOAT=0,HLS_INPUT_FIXED=0,HLS_INPUT_PART=xczu9eg-ffvb1156-2-e,HLS_INPUT_CLOCK=10.000000,HLS_INPUT_ARCH=others,HLS_SYN_CLOCK=7.300000,HLS_SYN_LAT=54,HLS_SYN_TPT=none,HLS_SYN_MEM=0,HLS_SYN_DSP=0,HLS_SYN_FF=2524,HLS_SYN_LUT=2036,HLS_VERSION=2025_1_1}" *)
 
 module RAM_INTERFACE (
         ap_clk,
@@ -63,12 +63,16 @@ module RAM_INTERFACE (
         done
 );
 
-parameter    ap_ST_fsm_state1 = 6'd1;
-parameter    ap_ST_fsm_state2 = 6'd2;
-parameter    ap_ST_fsm_state3 = 6'd4;
-parameter    ap_ST_fsm_state4 = 6'd8;
-parameter    ap_ST_fsm_state5 = 6'd16;
-parameter    ap_ST_fsm_state6 = 6'd32;
+parameter    ap_ST_fsm_state1 = 10'd1;
+parameter    ap_ST_fsm_state2 = 10'd2;
+parameter    ap_ST_fsm_state3 = 10'd4;
+parameter    ap_ST_fsm_state4 = 10'd8;
+parameter    ap_ST_fsm_state5 = 10'd16;
+parameter    ap_ST_fsm_state6 = 10'd32;
+parameter    ap_ST_fsm_state7 = 10'd64;
+parameter    ap_ST_fsm_state8 = 10'd128;
+parameter    ap_ST_fsm_state9 = 10'd256;
+parameter    ap_ST_fsm_state10 = 10'd512;
 parameter    C_M_AXI_GMEM_ID_WIDTH = 1;
 parameter    C_M_AXI_GMEM_ADDR_WIDTH = 64;
 parameter    C_M_AXI_GMEM_DATA_WIDTH = 64;
@@ -145,85 +149,171 @@ reg   [0:0] last_written;
 reg   [3:0] chunk_y;
 reg   [3:0] chunk_x;
 reg    data_blk_n;
-(* fsm_encoding = "none" *) reg   [5:0] ap_CS_fsm;
-wire    ap_CS_fsm_state5;
+(* fsm_encoding = "none" *) reg   [9:0] ap_CS_fsm;
+wire    ap_CS_fsm_state7;
 wire    ap_CS_fsm_state1;
 wire    ap_CS_fsm_state3;
-wire   [11:0] grp_fu_211_p3;
-reg   [11:0] base_reg_235;
+wire   [11:0] grp_fu_225_p3;
+reg   [11:0] base_reg_249;
 wire    ap_CS_fsm_state4;
-reg   [63:0] DDR_read_reg_240;
-reg   [1599:0] block_reg_245;
-wire    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start;
-wire    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done;
-wire    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_idle;
-wire    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_ready;
-wire    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWVALID;
-wire   [63:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWADDR;
-wire   [0:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWID;
-wire   [31:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWLEN;
-wire   [2:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWSIZE;
-wire   [1:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWBURST;
-wire   [1:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWLOCK;
-wire   [3:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWCACHE;
-wire   [2:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWPROT;
-wire   [3:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWQOS;
-wire   [3:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWREGION;
-wire   [0:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWUSER;
-wire    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WVALID;
-wire   [63:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WDATA;
-wire   [7:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WSTRB;
-wire    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WLAST;
-wire   [0:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WID;
-wire   [0:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WUSER;
-wire    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARVALID;
-wire   [63:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARADDR;
-wire   [0:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARID;
-wire   [31:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARLEN;
-wire   [2:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARSIZE;
-wire   [1:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARBURST;
-wire   [1:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARLOCK;
-wire   [3:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARCACHE;
-wire   [2:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARPROT;
-wire   [3:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARQOS;
-wire   [3:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARREGION;
-wire   [0:0] grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARUSER;
-wire    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_RREADY;
-wire    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_BREADY;
+reg   [63:0] DDR_read_reg_254;
+wire    ap_CS_fsm_state5;
+reg   [1599:0] block_reg_259;
+wire    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start;
+wire    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_done;
+wire    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_idle;
+wire    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_ready;
+wire    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWVALID;
+wire   [63:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWADDR;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWID;
+wire   [31:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLEN;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWSIZE;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWBURST;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLOCK;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWCACHE;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWPROT;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWQOS;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWREGION;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWUSER;
+wire    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WVALID;
+wire   [63:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WDATA;
+wire   [7:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WSTRB;
+wire    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WLAST;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WID;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WUSER;
+wire    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARVALID;
+wire   [63:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARADDR;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARID;
+wire   [31:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARLEN;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARSIZE;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARBURST;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARLOCK;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARCACHE;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARPROT;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARQOS;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARREGION;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARUSER;
+wire    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_RREADY;
+wire    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_BREADY;
+wire    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start;
+wire    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_done;
+wire    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_idle;
+wire    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_ready;
+wire    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWVALID;
+wire   [63:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWADDR;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWID;
+wire   [31:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLEN;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWSIZE;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWBURST;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLOCK;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWCACHE;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWPROT;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWQOS;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWREGION;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWUSER;
+wire    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WVALID;
+wire   [63:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WDATA;
+wire   [7:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WSTRB;
+wire    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WLAST;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WID;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WUSER;
+wire    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARVALID;
+wire   [63:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARADDR;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARID;
+wire   [31:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARLEN;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARSIZE;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARBURST;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARLOCK;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARCACHE;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARPROT;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARQOS;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARREGION;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARUSER;
+wire    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_RREADY;
+wire    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_BREADY;
+wire    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start;
+wire    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done;
+wire    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_idle;
+wire    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_ready;
+wire    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWVALID;
+wire   [63:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWADDR;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWID;
+wire   [31:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLEN;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWSIZE;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWBURST;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLOCK;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWCACHE;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWPROT;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWQOS;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWREGION;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWUSER;
+wire    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WVALID;
+wire   [63:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WDATA;
+wire   [7:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WSTRB;
+wire    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WLAST;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WID;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WUSER;
+wire    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARVALID;
+wire   [63:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARADDR;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARID;
+wire   [31:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARLEN;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARSIZE;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARBURST;
+wire   [1:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARLOCK;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARCACHE;
+wire   [2:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARPROT;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARQOS;
+wire   [3:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARREGION;
+wire   [0:0] grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARUSER;
+wire    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_RREADY;
+wire    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_BREADY;
 reg    gmem_0_AWVALID;
 wire    gmem_0_AWREADY;
+reg   [63:0] gmem_0_AWADDR;
+reg   [31:0] gmem_0_AWLEN;
 reg    gmem_0_WVALID;
 wire    gmem_0_WREADY;
+reg   [63:0] gmem_0_WDATA;
+reg   [7:0] gmem_0_WSTRB;
 wire    gmem_0_ARREADY;
 wire    gmem_0_RVALID;
 wire   [63:0] gmem_0_RDATA;
 wire   [8:0] gmem_0_RFIFONUM;
 wire    gmem_0_BVALID;
 reg    gmem_0_BREADY;
-reg   [0:0] ap_phi_mux_last_phi_fu_96_p6;
+reg   [0:0] ap_phi_mux_last_phi_fu_98_p6;
+wire    ap_CS_fsm_state10;
+wire   [0:0] icmp_ln64_fu_175_p2;
+wire   [0:0] icmp_ln66_fu_197_p2;
+reg    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg;
 wire    ap_CS_fsm_state6;
-wire   [0:0] icmp_ln41_fu_161_p2;
-wire   [0:0] icmp_ln43_fu_183_p2;
-reg    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg;
-wire   [3:0] add_ln47_fu_188_p2;
-wire   [3:0] add_ln50_fu_166_p2;
-wire   [5:0] tmp_fu_139_p3;
-wire   [6:0] zext_ln26_3_fu_147_p1;
-wire   [6:0] zext_ln26_1_fu_135_p1;
-wire   [6:0] add_ln26_fu_151_p2;
-wire   [7:0] grp_fu_211_p0;
-wire   [3:0] grp_fu_211_p1;
-wire   [6:0] grp_fu_211_p2;
-reg   [5:0] ap_NS_fsm;
+reg    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg;
+wire    ap_CS_fsm_state8;
+reg    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg;
+wire    ap_CS_fsm_state9;
+wire   [3:0] add_ln70_fu_202_p2;
+wire   [3:0] add_ln73_fu_180_p2;
+wire   [5:0] tmp_fu_153_p3;
+wire   [6:0] zext_ln39_3_fu_161_p1;
+wire   [6:0] zext_ln39_1_fu_149_p1;
+wire   [6:0] add_ln39_fu_165_p2;
+wire   [7:0] grp_fu_225_p0;
+wire   [3:0] grp_fu_225_p1;
+wire   [6:0] grp_fu_225_p2;
+reg   [9:0] ap_NS_fsm;
 wire    ap_ST_fsm_state1_blk;
 wire    ap_ST_fsm_state2_blk;
 wire    ap_ST_fsm_state3_blk;
 wire    ap_ST_fsm_state4_blk;
-reg    ap_ST_fsm_state5_blk;
+wire    ap_ST_fsm_state5_blk;
 reg    ap_ST_fsm_state6_blk;
-wire   [11:0] grp_fu_211_p10;
-wire   [11:0] grp_fu_211_p20;
-reg    ap_condition_283;
+reg    ap_ST_fsm_state7_blk;
+reg    ap_ST_fsm_state8_blk;
+wire    ap_ST_fsm_state9_blk;
+reg    ap_ST_fsm_state10_blk;
+wire   [11:0] grp_fu_225_p10;
+wire   [11:0] grp_fu_225_p20;
+reg    ap_condition_417;
 wire    ap_ce_reg;
 
 // power-on initialization
@@ -231,52 +321,54 @@ initial begin
 #0 last_written = 1'd0;
 #0 chunk_y = 4'd0;
 #0 chunk_x = 4'd0;
-#0 ap_CS_fsm = 6'd1;
-#0 grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg = 1'b0;
+#0 ap_CS_fsm = 10'd1;
+#0 grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg = 1'b0;
+#0 grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg = 1'b0;
+#0 grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg = 1'b0;
 end
 
-RAM_INTERFACE_RAM_INTERFACE_Pipeline_ROWS_COLS grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107(
+RAM_INTERFACE_RAM_INTERFACE_Pipeline_REQUESTS grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109(
     .ap_clk(ap_clk),
     .ap_rst(ap_rst_n_inv),
-    .ap_start(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start),
-    .ap_done(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done),
-    .ap_idle(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_idle),
-    .ap_ready(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_ready),
-    .m_axi_gmem_0_AWVALID(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWVALID),
+    .ap_start(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start),
+    .ap_done(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_done),
+    .ap_idle(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_idle),
+    .ap_ready(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_ready),
+    .m_axi_gmem_0_AWVALID(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWVALID),
     .m_axi_gmem_0_AWREADY(gmem_0_AWREADY),
-    .m_axi_gmem_0_AWADDR(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWADDR),
-    .m_axi_gmem_0_AWID(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWID),
-    .m_axi_gmem_0_AWLEN(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWLEN),
-    .m_axi_gmem_0_AWSIZE(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWSIZE),
-    .m_axi_gmem_0_AWBURST(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWBURST),
-    .m_axi_gmem_0_AWLOCK(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWLOCK),
-    .m_axi_gmem_0_AWCACHE(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWCACHE),
-    .m_axi_gmem_0_AWPROT(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWPROT),
-    .m_axi_gmem_0_AWQOS(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWQOS),
-    .m_axi_gmem_0_AWREGION(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWREGION),
-    .m_axi_gmem_0_AWUSER(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWUSER),
-    .m_axi_gmem_0_WVALID(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WVALID),
+    .m_axi_gmem_0_AWADDR(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWADDR),
+    .m_axi_gmem_0_AWID(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWID),
+    .m_axi_gmem_0_AWLEN(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLEN),
+    .m_axi_gmem_0_AWSIZE(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWSIZE),
+    .m_axi_gmem_0_AWBURST(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWBURST),
+    .m_axi_gmem_0_AWLOCK(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLOCK),
+    .m_axi_gmem_0_AWCACHE(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWCACHE),
+    .m_axi_gmem_0_AWPROT(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWPROT),
+    .m_axi_gmem_0_AWQOS(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWQOS),
+    .m_axi_gmem_0_AWREGION(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWREGION),
+    .m_axi_gmem_0_AWUSER(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWUSER),
+    .m_axi_gmem_0_WVALID(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WVALID),
     .m_axi_gmem_0_WREADY(gmem_0_WREADY),
-    .m_axi_gmem_0_WDATA(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WDATA),
-    .m_axi_gmem_0_WSTRB(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WSTRB),
-    .m_axi_gmem_0_WLAST(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WLAST),
-    .m_axi_gmem_0_WID(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WID),
-    .m_axi_gmem_0_WUSER(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WUSER),
-    .m_axi_gmem_0_ARVALID(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARVALID),
+    .m_axi_gmem_0_WDATA(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WDATA),
+    .m_axi_gmem_0_WSTRB(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WSTRB),
+    .m_axi_gmem_0_WLAST(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WLAST),
+    .m_axi_gmem_0_WID(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WID),
+    .m_axi_gmem_0_WUSER(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WUSER),
+    .m_axi_gmem_0_ARVALID(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARVALID),
     .m_axi_gmem_0_ARREADY(1'b0),
-    .m_axi_gmem_0_ARADDR(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARADDR),
-    .m_axi_gmem_0_ARID(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARID),
-    .m_axi_gmem_0_ARLEN(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARLEN),
-    .m_axi_gmem_0_ARSIZE(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARSIZE),
-    .m_axi_gmem_0_ARBURST(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARBURST),
-    .m_axi_gmem_0_ARLOCK(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARLOCK),
-    .m_axi_gmem_0_ARCACHE(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARCACHE),
-    .m_axi_gmem_0_ARPROT(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARPROT),
-    .m_axi_gmem_0_ARQOS(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARQOS),
-    .m_axi_gmem_0_ARREGION(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARREGION),
-    .m_axi_gmem_0_ARUSER(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARUSER),
+    .m_axi_gmem_0_ARADDR(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARADDR),
+    .m_axi_gmem_0_ARID(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARID),
+    .m_axi_gmem_0_ARLEN(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARLEN),
+    .m_axi_gmem_0_ARSIZE(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARSIZE),
+    .m_axi_gmem_0_ARBURST(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARBURST),
+    .m_axi_gmem_0_ARLOCK(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARLOCK),
+    .m_axi_gmem_0_ARCACHE(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARCACHE),
+    .m_axi_gmem_0_ARPROT(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARPROT),
+    .m_axi_gmem_0_ARQOS(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARQOS),
+    .m_axi_gmem_0_ARREGION(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARREGION),
+    .m_axi_gmem_0_ARUSER(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARUSER),
     .m_axi_gmem_0_RVALID(1'b0),
-    .m_axi_gmem_0_RREADY(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_RREADY),
+    .m_axi_gmem_0_RREADY(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_RREADY),
     .m_axi_gmem_0_RDATA(64'd0),
     .m_axi_gmem_0_RLAST(1'b0),
     .m_axi_gmem_0_RID(1'd0),
@@ -284,13 +376,123 @@ RAM_INTERFACE_RAM_INTERFACE_Pipeline_ROWS_COLS grp_RAM_INTERFACE_Pipeline_ROWS_C
     .m_axi_gmem_0_RUSER(1'd0),
     .m_axi_gmem_0_RRESP(2'd0),
     .m_axi_gmem_0_BVALID(gmem_0_BVALID),
-    .m_axi_gmem_0_BREADY(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_BREADY),
+    .m_axi_gmem_0_BREADY(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_BREADY),
     .m_axi_gmem_0_BRESP(2'd0),
     .m_axi_gmem_0_BID(1'd0),
     .m_axi_gmem_0_BUSER(1'd0),
-    .block_r(block_reg_245),
-    .base_r(base_reg_235),
-    .DDR(DDR_read_reg_240)
+    .base_r(base_reg_249),
+    .DDR(DDR_read_reg_254)
+);
+
+RAM_INTERFACE_RAM_INTERFACE_Pipeline_BEATS grp_RAM_INTERFACE_Pipeline_BEATS_fu_118(
+    .ap_clk(ap_clk),
+    .ap_rst(ap_rst_n_inv),
+    .ap_start(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start),
+    .ap_done(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_done),
+    .ap_idle(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_idle),
+    .ap_ready(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_ready),
+    .m_axi_gmem_0_AWVALID(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWVALID),
+    .m_axi_gmem_0_AWREADY(gmem_0_AWREADY),
+    .m_axi_gmem_0_AWADDR(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWADDR),
+    .m_axi_gmem_0_AWID(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWID),
+    .m_axi_gmem_0_AWLEN(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLEN),
+    .m_axi_gmem_0_AWSIZE(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWSIZE),
+    .m_axi_gmem_0_AWBURST(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWBURST),
+    .m_axi_gmem_0_AWLOCK(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLOCK),
+    .m_axi_gmem_0_AWCACHE(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWCACHE),
+    .m_axi_gmem_0_AWPROT(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWPROT),
+    .m_axi_gmem_0_AWQOS(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWQOS),
+    .m_axi_gmem_0_AWREGION(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWREGION),
+    .m_axi_gmem_0_AWUSER(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWUSER),
+    .m_axi_gmem_0_WVALID(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WVALID),
+    .m_axi_gmem_0_WREADY(gmem_0_WREADY),
+    .m_axi_gmem_0_WDATA(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WDATA),
+    .m_axi_gmem_0_WSTRB(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WSTRB),
+    .m_axi_gmem_0_WLAST(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WLAST),
+    .m_axi_gmem_0_WID(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WID),
+    .m_axi_gmem_0_WUSER(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WUSER),
+    .m_axi_gmem_0_ARVALID(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARVALID),
+    .m_axi_gmem_0_ARREADY(1'b0),
+    .m_axi_gmem_0_ARADDR(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARADDR),
+    .m_axi_gmem_0_ARID(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARID),
+    .m_axi_gmem_0_ARLEN(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARLEN),
+    .m_axi_gmem_0_ARSIZE(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARSIZE),
+    .m_axi_gmem_0_ARBURST(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARBURST),
+    .m_axi_gmem_0_ARLOCK(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARLOCK),
+    .m_axi_gmem_0_ARCACHE(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARCACHE),
+    .m_axi_gmem_0_ARPROT(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARPROT),
+    .m_axi_gmem_0_ARQOS(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARQOS),
+    .m_axi_gmem_0_ARREGION(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARREGION),
+    .m_axi_gmem_0_ARUSER(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARUSER),
+    .m_axi_gmem_0_RVALID(1'b0),
+    .m_axi_gmem_0_RREADY(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_RREADY),
+    .m_axi_gmem_0_RDATA(64'd0),
+    .m_axi_gmem_0_RLAST(1'b0),
+    .m_axi_gmem_0_RID(1'd0),
+    .m_axi_gmem_0_RFIFONUM(9'd0),
+    .m_axi_gmem_0_RUSER(1'd0),
+    .m_axi_gmem_0_RRESP(2'd0),
+    .m_axi_gmem_0_BVALID(gmem_0_BVALID),
+    .m_axi_gmem_0_BREADY(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_BREADY),
+    .m_axi_gmem_0_BRESP(2'd0),
+    .m_axi_gmem_0_BID(1'd0),
+    .m_axi_gmem_0_BUSER(1'd0),
+    .block_r(block_reg_259)
+);
+
+RAM_INTERFACE_RAM_INTERFACE_Pipeline_RESPONSES grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126(
+    .ap_clk(ap_clk),
+    .ap_rst(ap_rst_n_inv),
+    .ap_start(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start),
+    .ap_done(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done),
+    .ap_idle(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_idle),
+    .ap_ready(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_ready),
+    .m_axi_gmem_0_AWVALID(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWVALID),
+    .m_axi_gmem_0_AWREADY(gmem_0_AWREADY),
+    .m_axi_gmem_0_AWADDR(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWADDR),
+    .m_axi_gmem_0_AWID(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWID),
+    .m_axi_gmem_0_AWLEN(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLEN),
+    .m_axi_gmem_0_AWSIZE(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWSIZE),
+    .m_axi_gmem_0_AWBURST(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWBURST),
+    .m_axi_gmem_0_AWLOCK(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLOCK),
+    .m_axi_gmem_0_AWCACHE(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWCACHE),
+    .m_axi_gmem_0_AWPROT(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWPROT),
+    .m_axi_gmem_0_AWQOS(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWQOS),
+    .m_axi_gmem_0_AWREGION(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWREGION),
+    .m_axi_gmem_0_AWUSER(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWUSER),
+    .m_axi_gmem_0_WVALID(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WVALID),
+    .m_axi_gmem_0_WREADY(gmem_0_WREADY),
+    .m_axi_gmem_0_WDATA(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WDATA),
+    .m_axi_gmem_0_WSTRB(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WSTRB),
+    .m_axi_gmem_0_WLAST(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WLAST),
+    .m_axi_gmem_0_WID(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WID),
+    .m_axi_gmem_0_WUSER(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WUSER),
+    .m_axi_gmem_0_ARVALID(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARVALID),
+    .m_axi_gmem_0_ARREADY(1'b0),
+    .m_axi_gmem_0_ARADDR(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARADDR),
+    .m_axi_gmem_0_ARID(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARID),
+    .m_axi_gmem_0_ARLEN(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARLEN),
+    .m_axi_gmem_0_ARSIZE(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARSIZE),
+    .m_axi_gmem_0_ARBURST(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARBURST),
+    .m_axi_gmem_0_ARLOCK(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARLOCK),
+    .m_axi_gmem_0_ARCACHE(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARCACHE),
+    .m_axi_gmem_0_ARPROT(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARPROT),
+    .m_axi_gmem_0_ARQOS(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARQOS),
+    .m_axi_gmem_0_ARREGION(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARREGION),
+    .m_axi_gmem_0_ARUSER(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARUSER),
+    .m_axi_gmem_0_RVALID(1'b0),
+    .m_axi_gmem_0_RREADY(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_RREADY),
+    .m_axi_gmem_0_RDATA(64'd0),
+    .m_axi_gmem_0_RLAST(1'b0),
+    .m_axi_gmem_0_RID(1'd0),
+    .m_axi_gmem_0_RFIFONUM(9'd0),
+    .m_axi_gmem_0_RUSER(1'd0),
+    .m_axi_gmem_0_RRESP(2'd0),
+    .m_axi_gmem_0_BVALID(gmem_0_BVALID),
+    .m_axi_gmem_0_BREADY(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_BREADY),
+    .m_axi_gmem_0_BRESP(2'd0),
+    .m_axi_gmem_0_BID(1'd0),
+    .m_axi_gmem_0_BUSER(1'd0)
 );
 
 RAM_INTERFACE_gmem_m_axi #(
@@ -310,12 +512,12 @@ RAM_INTERFACE_gmem_m_axi #(
     .C_PROT_VALUE( C_M_AXI_GMEM_PROT_VALUE ),
     .C_CACHE_VALUE( C_M_AXI_GMEM_CACHE_VALUE ),
     .CH0_NUM_READ_OUTSTANDING( 16 ),
-    .CH0_NUM_WRITE_OUTSTANDING( 4 ),
+    .CH0_NUM_WRITE_OUTSTANDING( 8 ),
     .CH0_USER_RFIFONUM_WIDTH( 9 ),
     .CH0_USER_DW( 64 ),
     .CH0_USER_AW( 64 ),
     .NUM_READ_OUTSTANDING( 0 ),
-    .NUM_WRITE_OUTSTANDING( 4 ))
+    .NUM_WRITE_OUTSTANDING( 8 ))
 gmem_m_axi_U(
     .AWVALID(m_axi_gmem_AWVALID),
     .AWREADY(m_axi_gmem_AWREADY),
@@ -375,12 +577,12 @@ gmem_m_axi_U(
     .I_CH0_RFIFONUM(gmem_0_RFIFONUM),
     .I_CH0_AWVALID(gmem_0_AWVALID),
     .I_CH0_AWREADY(gmem_0_AWREADY),
-    .I_CH0_AWADDR(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWADDR),
-    .I_CH0_AWLEN(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWLEN),
+    .I_CH0_AWADDR(gmem_0_AWADDR),
+    .I_CH0_AWLEN(gmem_0_AWLEN),
     .I_CH0_WVALID(gmem_0_WVALID),
     .I_CH0_WREADY(gmem_0_WREADY),
-    .I_CH0_WDATA(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WDATA),
-    .I_CH0_WSTRB(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WSTRB),
+    .I_CH0_WDATA(gmem_0_WDATA),
+    .I_CH0_WSTRB(gmem_0_WSTRB),
     .I_CH0_BVALID(gmem_0_BVALID),
     .I_CH0_BREADY(gmem_0_BREADY)
 );
@@ -395,11 +597,11 @@ RAM_INTERFACE_mac_muladd_8ns_4ns_7ns_12_4_1 #(
 mac_muladd_8ns_4ns_7ns_12_4_1_U9(
     .clk(ap_clk),
     .reset(ap_rst_n_inv),
-    .din0(grp_fu_211_p0),
-    .din1(grp_fu_211_p1),
-    .din2(grp_fu_211_p2),
+    .din0(grp_fu_225_p0),
+    .din1(grp_fu_225_p1),
+    .din2(grp_fu_225_p2),
     .ce(1'b1),
-    .dout(grp_fu_211_p3)
+    .dout(grp_fu_225_p3)
 );
 
 always @ (posedge ap_clk) begin
@@ -412,52 +614,89 @@ end
 
 always @ (posedge ap_clk) begin
     if (ap_rst_n_inv == 1'b1) begin
-        grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg <= 1'b0;
+        grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg <= 1'b0;
     end else begin
-        if (((data_empty_n == 1'b1) & (1'b1 == ap_CS_fsm_state5))) begin
-            grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg <= 1'b1;
-        end else if ((grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_ready == 1'b1)) begin
-            grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg <= 1'b0;
+        if (((data_empty_n == 1'b1) & (1'b1 == ap_CS_fsm_state7))) begin
+            grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg <= 1'b1;
+        end else if ((grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_ready == 1'b1)) begin
+            grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg <= 1'b0;
         end
     end
 end
 
 always @ (posedge ap_clk) begin
-    if (((1'b1 == ap_CS_fsm_state6) & (grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done == 1'b1))) begin
-        if ((icmp_ln41_fu_161_p2 == 1'd1)) begin
+    if (ap_rst_n_inv == 1'b1) begin
+        grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg <= 1'b0;
+    end else begin
+        if ((1'b1 == ap_CS_fsm_state5)) begin
+            grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg <= 1'b1;
+        end else if ((grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_ready == 1'b1)) begin
+            grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg <= 1'b0;
+        end
+    end
+end
+
+always @ (posedge ap_clk) begin
+    if (ap_rst_n_inv == 1'b1) begin
+        grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg <= 1'b0;
+    end else begin
+        if ((1'b1 == ap_CS_fsm_state9)) begin
+            grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg <= 1'b1;
+        end else if ((grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_ready == 1'b1)) begin
+            grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg <= 1'b0;
+        end
+    end
+end
+
+always @ (posedge ap_clk) begin
+    if (((grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done == 1'b1) & (1'b1 == ap_CS_fsm_state10))) begin
+        if ((icmp_ln64_fu_175_p2 == 1'd1)) begin
             chunk_x <= 4'd0;
-        end else if ((icmp_ln41_fu_161_p2 == 1'd0)) begin
-            chunk_x <= add_ln50_fu_166_p2;
+        end else if ((icmp_ln64_fu_175_p2 == 1'd0)) begin
+            chunk_x <= add_ln73_fu_180_p2;
         end
     end
 end
 
 always @ (posedge ap_clk) begin
-    if ((1'b1 == ap_condition_283)) begin
-        if ((icmp_ln43_fu_183_p2 == 1'd1)) begin
+    if ((1'b1 == ap_condition_417)) begin
+        if ((icmp_ln66_fu_197_p2 == 1'd1)) begin
             chunk_y <= 4'd0;
-        end else if ((icmp_ln43_fu_183_p2 == 1'd0)) begin
-            chunk_y <= add_ln47_fu_188_p2;
+        end else if ((icmp_ln66_fu_197_p2 == 1'd0)) begin
+            chunk_y <= add_ln70_fu_202_p2;
         end
     end
 end
 
 always @ (posedge ap_clk) begin
     if ((1'b1 == ap_CS_fsm_state5)) begin
-        DDR_read_reg_240 <= DDR;
-        block_reg_245 <= data_dout;
+        DDR_read_reg_254 <= DDR;
     end
 end
 
 always @ (posedge ap_clk) begin
     if ((1'b1 == ap_CS_fsm_state4)) begin
-        base_reg_235 <= grp_fu_211_p3;
+        base_reg_249 <= grp_fu_225_p3;
     end
 end
 
 always @ (posedge ap_clk) begin
-    if (((1'b1 == ap_CS_fsm_state6) & (grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done == 1'b1))) begin
-        last_written <= ap_phi_mux_last_phi_fu_96_p6;
+    if ((1'b1 == ap_CS_fsm_state7)) begin
+        block_reg_259 <= data_dout;
+    end
+end
+
+always @ (posedge ap_clk) begin
+    if (((grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done == 1'b1) & (1'b1 == ap_CS_fsm_state10))) begin
+        last_written <= ap_phi_mux_last_phi_fu_98_p6;
+    end
+end
+
+always @ (*) begin
+    if ((grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done == 1'b0)) begin
+        ap_ST_fsm_state10_blk = 1'b1;
+    end else begin
+        ap_ST_fsm_state10_blk = 1'b0;
     end
 end
 
@@ -469,16 +708,10 @@ assign ap_ST_fsm_state3_blk = 1'b0;
 
 assign ap_ST_fsm_state4_blk = 1'b0;
 
-always @ (*) begin
-    if ((data_empty_n == 1'b0)) begin
-        ap_ST_fsm_state5_blk = 1'b1;
-    end else begin
-        ap_ST_fsm_state5_blk = 1'b0;
-    end
-end
+assign ap_ST_fsm_state5_blk = 1'b0;
 
 always @ (*) begin
-    if ((grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done == 1'b0)) begin
+    if ((grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_done == 1'b0)) begin
         ap_ST_fsm_state6_blk = 1'b1;
     end else begin
         ap_ST_fsm_state6_blk = 1'b0;
@@ -486,17 +719,35 @@ always @ (*) begin
 end
 
 always @ (*) begin
-    if (((icmp_ln43_fu_183_p2 == 1'd1) & (icmp_ln41_fu_161_p2 == 1'd1) & (1'b1 == ap_CS_fsm_state6))) begin
-        ap_phi_mux_last_phi_fu_96_p6 = 1'd1;
-    end else if ((((icmp_ln43_fu_183_p2 == 1'd0) & (icmp_ln41_fu_161_p2 == 1'd1) & (1'b1 == ap_CS_fsm_state6)) | ((icmp_ln41_fu_161_p2 == 1'd0) & (1'b1 == ap_CS_fsm_state6)))) begin
-        ap_phi_mux_last_phi_fu_96_p6 = 1'd0;
+    if ((data_empty_n == 1'b0)) begin
+        ap_ST_fsm_state7_blk = 1'b1;
     end else begin
-        ap_phi_mux_last_phi_fu_96_p6 = 'bx;
+        ap_ST_fsm_state7_blk = 1'b0;
     end
 end
 
 always @ (*) begin
-    if ((1'b1 == ap_CS_fsm_state5)) begin
+    if ((grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_done == 1'b0)) begin
+        ap_ST_fsm_state8_blk = 1'b1;
+    end else begin
+        ap_ST_fsm_state8_blk = 1'b0;
+    end
+end
+
+assign ap_ST_fsm_state9_blk = 1'b0;
+
+always @ (*) begin
+    if (((icmp_ln66_fu_197_p2 == 1'd1) & (icmp_ln64_fu_175_p2 == 1'd1) & (1'b1 == ap_CS_fsm_state10))) begin
+        ap_phi_mux_last_phi_fu_98_p6 = 1'd1;
+    end else if ((((icmp_ln66_fu_197_p2 == 1'd0) & (icmp_ln64_fu_175_p2 == 1'd1) & (1'b1 == ap_CS_fsm_state10)) | ((icmp_ln64_fu_175_p2 == 1'd0) & (1'b1 == ap_CS_fsm_state10)))) begin
+        ap_phi_mux_last_phi_fu_98_p6 = 1'd0;
+    end else begin
+        ap_phi_mux_last_phi_fu_98_p6 = 'bx;
+    end
+end
+
+always @ (*) begin
+    if ((1'b1 == ap_CS_fsm_state7)) begin
         data_blk_n = data_empty_n;
     end else begin
         data_blk_n = 1'b1;
@@ -504,7 +755,7 @@ always @ (*) begin
 end
 
 always @ (*) begin
-    if (((data_empty_n == 1'b1) & (1'b1 == ap_CS_fsm_state5))) begin
+    if (((data_empty_n == 1'b1) & (1'b1 == ap_CS_fsm_state7))) begin
         data_read = 1'b1;
     end else begin
         data_read = 1'b0;
@@ -512,24 +763,84 @@ always @ (*) begin
 end
 
 always @ (*) begin
-    if (((1'b1 == ap_CS_fsm_state5) | (1'b1 == ap_CS_fsm_state6))) begin
-        gmem_0_AWVALID = grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWVALID;
+    if (((1'b1 == ap_CS_fsm_state9) | (1'b1 == ap_CS_fsm_state10))) begin
+        gmem_0_AWADDR = grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWADDR;
+    end else if (((1'b1 == ap_CS_fsm_state7) | (1'b1 == ap_CS_fsm_state8))) begin
+        gmem_0_AWADDR = grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWADDR;
+    end else if (((1'b1 == ap_CS_fsm_state6) | (1'b1 == ap_CS_fsm_state5))) begin
+        gmem_0_AWADDR = grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWADDR;
+    end else begin
+        gmem_0_AWADDR = 'bx;
+    end
+end
+
+always @ (*) begin
+    if (((1'b1 == ap_CS_fsm_state9) | (1'b1 == ap_CS_fsm_state10))) begin
+        gmem_0_AWLEN = grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLEN;
+    end else if (((1'b1 == ap_CS_fsm_state7) | (1'b1 == ap_CS_fsm_state8))) begin
+        gmem_0_AWLEN = grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLEN;
+    end else if (((1'b1 == ap_CS_fsm_state6) | (1'b1 == ap_CS_fsm_state5))) begin
+        gmem_0_AWLEN = grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLEN;
+    end else begin
+        gmem_0_AWLEN = 'bx;
+    end
+end
+
+always @ (*) begin
+    if (((1'b1 == ap_CS_fsm_state9) | (1'b1 == ap_CS_fsm_state10))) begin
+        gmem_0_AWVALID = grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWVALID;
+    end else if (((1'b1 == ap_CS_fsm_state7) | (1'b1 == ap_CS_fsm_state8))) begin
+        gmem_0_AWVALID = grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWVALID;
+    end else if (((1'b1 == ap_CS_fsm_state6) | (1'b1 == ap_CS_fsm_state5))) begin
+        gmem_0_AWVALID = grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWVALID;
     end else begin
         gmem_0_AWVALID = 1'b0;
     end
 end
 
 always @ (*) begin
-    if (((1'b1 == ap_CS_fsm_state5) | (1'b1 == ap_CS_fsm_state6))) begin
-        gmem_0_BREADY = grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_BREADY;
+    if (((1'b1 == ap_CS_fsm_state9) | (1'b1 == ap_CS_fsm_state10))) begin
+        gmem_0_BREADY = grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_BREADY;
+    end else if (((1'b1 == ap_CS_fsm_state7) | (1'b1 == ap_CS_fsm_state8))) begin
+        gmem_0_BREADY = grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_BREADY;
+    end else if (((1'b1 == ap_CS_fsm_state6) | (1'b1 == ap_CS_fsm_state5))) begin
+        gmem_0_BREADY = grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_BREADY;
     end else begin
         gmem_0_BREADY = 1'b0;
     end
 end
 
 always @ (*) begin
-    if (((1'b1 == ap_CS_fsm_state5) | (1'b1 == ap_CS_fsm_state6))) begin
-        gmem_0_WVALID = grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WVALID;
+    if (((1'b1 == ap_CS_fsm_state9) | (1'b1 == ap_CS_fsm_state10))) begin
+        gmem_0_WDATA = grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WDATA;
+    end else if (((1'b1 == ap_CS_fsm_state7) | (1'b1 == ap_CS_fsm_state8))) begin
+        gmem_0_WDATA = grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WDATA;
+    end else if (((1'b1 == ap_CS_fsm_state6) | (1'b1 == ap_CS_fsm_state5))) begin
+        gmem_0_WDATA = grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WDATA;
+    end else begin
+        gmem_0_WDATA = 'bx;
+    end
+end
+
+always @ (*) begin
+    if (((1'b1 == ap_CS_fsm_state9) | (1'b1 == ap_CS_fsm_state10))) begin
+        gmem_0_WSTRB = grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WSTRB;
+    end else if (((1'b1 == ap_CS_fsm_state7) | (1'b1 == ap_CS_fsm_state8))) begin
+        gmem_0_WSTRB = grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WSTRB;
+    end else if (((1'b1 == ap_CS_fsm_state6) | (1'b1 == ap_CS_fsm_state5))) begin
+        gmem_0_WSTRB = grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WSTRB;
+    end else begin
+        gmem_0_WSTRB = 'bx;
+    end
+end
+
+always @ (*) begin
+    if (((1'b1 == ap_CS_fsm_state9) | (1'b1 == ap_CS_fsm_state10))) begin
+        gmem_0_WVALID = grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WVALID;
+    end else if (((1'b1 == ap_CS_fsm_state7) | (1'b1 == ap_CS_fsm_state8))) begin
+        gmem_0_WVALID = grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WVALID;
+    end else if (((1'b1 == ap_CS_fsm_state6) | (1'b1 == ap_CS_fsm_state5))) begin
+        gmem_0_WVALID = grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WVALID;
     end else begin
         gmem_0_WVALID = 1'b0;
     end
@@ -550,17 +861,37 @@ always @ (*) begin
             ap_NS_fsm = ap_ST_fsm_state5;
         end
         ap_ST_fsm_state5 : begin
-            if (((data_empty_n == 1'b1) & (1'b1 == ap_CS_fsm_state5))) begin
-                ap_NS_fsm = ap_ST_fsm_state6;
-            end else begin
-                ap_NS_fsm = ap_ST_fsm_state5;
-            end
+            ap_NS_fsm = ap_ST_fsm_state6;
         end
         ap_ST_fsm_state6 : begin
-            if (((1'b1 == ap_CS_fsm_state6) & (grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done == 1'b1))) begin
-                ap_NS_fsm = ap_ST_fsm_state1;
+            if (((1'b1 == ap_CS_fsm_state6) & (grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_done == 1'b1))) begin
+                ap_NS_fsm = ap_ST_fsm_state7;
             end else begin
                 ap_NS_fsm = ap_ST_fsm_state6;
+            end
+        end
+        ap_ST_fsm_state7 : begin
+            if (((data_empty_n == 1'b1) & (1'b1 == ap_CS_fsm_state7))) begin
+                ap_NS_fsm = ap_ST_fsm_state8;
+            end else begin
+                ap_NS_fsm = ap_ST_fsm_state7;
+            end
+        end
+        ap_ST_fsm_state8 : begin
+            if (((1'b1 == ap_CS_fsm_state8) & (grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_done == 1'b1))) begin
+                ap_NS_fsm = ap_ST_fsm_state9;
+            end else begin
+                ap_NS_fsm = ap_ST_fsm_state8;
+            end
+        end
+        ap_ST_fsm_state9 : begin
+            ap_NS_fsm = ap_ST_fsm_state10;
+        end
+        ap_ST_fsm_state10 : begin
+            if (((grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done == 1'b1) & (1'b1 == ap_CS_fsm_state10))) begin
+                ap_NS_fsm = ap_ST_fsm_state1;
+            end else begin
+                ap_NS_fsm = ap_ST_fsm_state10;
             end
         end
         default : begin
@@ -569,13 +900,15 @@ always @ (*) begin
     endcase
 end
 
-assign add_ln26_fu_151_p2 = (zext_ln26_3_fu_147_p1 + zext_ln26_1_fu_135_p1);
+assign add_ln39_fu_165_p2 = (zext_ln39_3_fu_161_p1 + zext_ln39_1_fu_149_p1);
 
-assign add_ln47_fu_188_p2 = (chunk_y + 4'd1);
+assign add_ln70_fu_202_p2 = (chunk_y + 4'd1);
 
-assign add_ln50_fu_166_p2 = (chunk_x + 4'd1);
+assign add_ln73_fu_180_p2 = (chunk_x + 4'd1);
 
 assign ap_CS_fsm_state1 = ap_CS_fsm[32'd0];
+
+assign ap_CS_fsm_state10 = ap_CS_fsm[32'd9];
 
 assign ap_CS_fsm_state3 = ap_CS_fsm[32'd2];
 
@@ -585,8 +918,14 @@ assign ap_CS_fsm_state5 = ap_CS_fsm[32'd4];
 
 assign ap_CS_fsm_state6 = ap_CS_fsm[32'd5];
 
+assign ap_CS_fsm_state7 = ap_CS_fsm[32'd6];
+
+assign ap_CS_fsm_state8 = ap_CS_fsm[32'd7];
+
+assign ap_CS_fsm_state9 = ap_CS_fsm[32'd8];
+
 always @ (*) begin
-    ap_condition_283 = ((icmp_ln41_fu_161_p2 == 1'd1) & (1'b1 == ap_CS_fsm_state6) & (grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done == 1'b1));
+    ap_condition_417 = ((icmp_ln64_fu_175_p2 == 1'd1) & (grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done == 1'b1) & (1'b1 == ap_CS_fsm_state10));
 end
 
 always @ (*) begin
@@ -595,26 +934,30 @@ end
 
 assign done = last_written;
 
-assign grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start = grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg;
+assign grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start = grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg;
 
-assign grp_fu_211_p0 = 12'd250;
+assign grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start = grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg;
 
-assign grp_fu_211_p1 = grp_fu_211_p10;
+assign grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start = grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg;
 
-assign grp_fu_211_p10 = chunk_y;
+assign grp_fu_225_p0 = 12'd250;
 
-assign grp_fu_211_p2 = grp_fu_211_p20;
+assign grp_fu_225_p1 = grp_fu_225_p10;
 
-assign grp_fu_211_p20 = add_ln26_fu_151_p2;
+assign grp_fu_225_p10 = chunk_y;
 
-assign icmp_ln41_fu_161_p2 = ((chunk_x == 4'd9) ? 1'b1 : 1'b0);
+assign grp_fu_225_p2 = grp_fu_225_p20;
 
-assign icmp_ln43_fu_183_p2 = ((chunk_y == 4'd9) ? 1'b1 : 1'b0);
+assign grp_fu_225_p20 = add_ln39_fu_165_p2;
 
-assign tmp_fu_139_p3 = {{chunk_x}, {2'd0}};
+assign icmp_ln64_fu_175_p2 = ((chunk_x == 4'd9) ? 1'b1 : 1'b0);
 
-assign zext_ln26_1_fu_135_p1 = chunk_x;
+assign icmp_ln66_fu_197_p2 = ((chunk_y == 4'd9) ? 1'b1 : 1'b0);
 
-assign zext_ln26_3_fu_147_p1 = tmp_fu_139_p3;
+assign tmp_fu_153_p3 = {{chunk_x}, {2'd0}};
+
+assign zext_ln39_1_fu_149_p1 = chunk_x;
+
+assign zext_ln39_3_fu_161_p1 = tmp_fu_153_p3;
 
 endmodule //RAM_INTERFACE

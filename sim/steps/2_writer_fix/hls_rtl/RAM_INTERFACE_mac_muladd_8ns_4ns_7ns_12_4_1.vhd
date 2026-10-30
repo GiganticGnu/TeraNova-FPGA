@@ -7,19 +7,19 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity RAM_INTERFACE_mac_muladd_6ns_3ns_12ns_12_4_1_DSP48_0 is
+entity RAM_INTERFACE_mac_muladd_8ns_4ns_7ns_12_4_1_DSP48_0 is
 port (
     clk: in  std_logic;
     rst: in  std_logic;
     ce:  in  std_logic;
-    in0:  in  std_logic_vector(6 - 1 downto 0);
-    in1:  in  std_logic_vector(3 - 1 downto 0);
-    in2:  in  std_logic_vector(12 - 1 downto 0);
+    in0:  in  std_logic_vector(8 - 1 downto 0);
+    in1:  in  std_logic_vector(4 - 1 downto 0);
+    in2:  in  std_logic_vector(7 - 1 downto 0);
     dout: out std_logic_vector(12 - 1 downto 0));
 
 end entity;
 
-architecture behav of RAM_INTERFACE_mac_muladd_6ns_3ns_12ns_12_4_1_DSP48_0 is
+architecture behav of RAM_INTERFACE_mac_muladd_8ns_4ns_7ns_12_4_1_DSP48_0 is
     signal a       : signed(27-1 downto 0);
     signal b       : signed(18-1 downto 0);
     signal c       : signed(48-1 downto 0);
@@ -54,7 +54,7 @@ end architecture;
 Library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity RAM_INTERFACE_mac_muladd_6ns_3ns_12ns_12_4_1 is
+entity RAM_INTERFACE_mac_muladd_8ns_4ns_7ns_12_4_1 is
     generic (
         ID : INTEGER;
         NUM_STAGE : INTEGER;
@@ -72,8 +72,8 @@ entity RAM_INTERFACE_mac_muladd_6ns_3ns_12ns_12_4_1 is
         dout : OUT STD_LOGIC_VECTOR(dout_WIDTH - 1 DOWNTO 0));
 end entity;
 
-architecture arch of RAM_INTERFACE_mac_muladd_6ns_3ns_12ns_12_4_1 is
-    component RAM_INTERFACE_mac_muladd_6ns_3ns_12ns_12_4_1_DSP48_0 is
+architecture arch of RAM_INTERFACE_mac_muladd_8ns_4ns_7ns_12_4_1 is
+    component RAM_INTERFACE_mac_muladd_8ns_4ns_7ns_12_4_1_DSP48_0 is
         port (
             clk : IN STD_LOGIC;
             rst : IN STD_LOGIC;
@@ -87,7 +87,7 @@ architecture arch of RAM_INTERFACE_mac_muladd_6ns_3ns_12ns_12_4_1 is
 
 
 begin
-    RAM_INTERFACE_mac_muladd_6ns_3ns_12ns_12_4_1_DSP48_0_U :  component RAM_INTERFACE_mac_muladd_6ns_3ns_12ns_12_4_1_DSP48_0
+    RAM_INTERFACE_mac_muladd_8ns_4ns_7ns_12_4_1_DSP48_0_U :  component RAM_INTERFACE_mac_muladd_8ns_4ns_7ns_12_4_1_DSP48_0
     port map (
         clk => clk,
         rst => reset,

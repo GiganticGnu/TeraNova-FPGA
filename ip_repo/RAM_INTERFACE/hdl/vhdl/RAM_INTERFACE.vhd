@@ -80,25 +80,33 @@ end;
 architecture behav of RAM_INTERFACE is 
     attribute CORE_GENERATION_INFO : STRING;
     attribute CORE_GENERATION_INFO of behav : architecture is
-    "RAM_INTERFACE_RAM_INTERFACE,hls_ip_2025_1_1,{HLS_INPUT_TYPE=cxx,HLS_INPUT_FLOAT=0,HLS_INPUT_FIXED=0,HLS_INPUT_PART=xczu9eg-ffvb1156-2-e,HLS_INPUT_CLOCK=10.000000,HLS_INPUT_ARCH=others,HLS_SYN_CLOCK=7.300000,HLS_SYN_LAT=41,HLS_SYN_TPT=none,HLS_SYN_MEM=0,HLS_SYN_DSP=0,HLS_SYN_FF=2708,HLS_SYN_LUT=1943,HLS_VERSION=2025_1_1}";
+    "RAM_INTERFACE_RAM_INTERFACE,hls_ip_2025_1_1,{HLS_INPUT_TYPE=cxx,HLS_INPUT_FLOAT=0,HLS_INPUT_FIXED=0,HLS_INPUT_PART=xczu9eg-ffvb1156-2-e,HLS_INPUT_CLOCK=10.000000,HLS_INPUT_ARCH=others,HLS_SYN_CLOCK=7.300000,HLS_SYN_LAT=54,HLS_SYN_TPT=none,HLS_SYN_MEM=0,HLS_SYN_DSP=0,HLS_SYN_FF=2524,HLS_SYN_LUT=2036,HLS_VERSION=2025_1_1}";
     constant ap_const_logic_1 : STD_LOGIC := '1';
     constant ap_const_logic_0 : STD_LOGIC := '0';
-    constant ap_ST_fsm_state1 : STD_LOGIC_VECTOR (5 downto 0) := "000001";
-    constant ap_ST_fsm_state2 : STD_LOGIC_VECTOR (5 downto 0) := "000010";
-    constant ap_ST_fsm_state3 : STD_LOGIC_VECTOR (5 downto 0) := "000100";
-    constant ap_ST_fsm_state4 : STD_LOGIC_VECTOR (5 downto 0) := "001000";
-    constant ap_ST_fsm_state5 : STD_LOGIC_VECTOR (5 downto 0) := "010000";
-    constant ap_ST_fsm_state6 : STD_LOGIC_VECTOR (5 downto 0) := "100000";
+    constant ap_ST_fsm_state1 : STD_LOGIC_VECTOR (9 downto 0) := "0000000001";
+    constant ap_ST_fsm_state2 : STD_LOGIC_VECTOR (9 downto 0) := "0000000010";
+    constant ap_ST_fsm_state3 : STD_LOGIC_VECTOR (9 downto 0) := "0000000100";
+    constant ap_ST_fsm_state4 : STD_LOGIC_VECTOR (9 downto 0) := "0000001000";
+    constant ap_ST_fsm_state5 : STD_LOGIC_VECTOR (9 downto 0) := "0000010000";
+    constant ap_ST_fsm_state6 : STD_LOGIC_VECTOR (9 downto 0) := "0000100000";
+    constant ap_ST_fsm_state7 : STD_LOGIC_VECTOR (9 downto 0) := "0001000000";
+    constant ap_ST_fsm_state8 : STD_LOGIC_VECTOR (9 downto 0) := "0010000000";
+    constant ap_ST_fsm_state9 : STD_LOGIC_VECTOR (9 downto 0) := "0100000000";
+    constant ap_ST_fsm_state10 : STD_LOGIC_VECTOR (9 downto 0) := "1000000000";
     constant ap_const_lv1_0 : STD_LOGIC_VECTOR (0 downto 0) := "0";
     constant ap_const_lv4_0 : STD_LOGIC_VECTOR (3 downto 0) := "0000";
     constant ap_const_boolean_1 : BOOLEAN := true;
-    constant ap_const_lv32_4 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000100";
+    constant ap_const_lv32_6 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000110";
     constant ap_const_lv32_0 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000000";
     constant ap_const_lv32_2 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000010";
     constant ap_const_lv32_3 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000011";
+    constant ap_const_lv32_4 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000100";
     constant C_M_AXI_DATA_WIDTH : INTEGER := 32;
-    constant ap_const_lv32_5 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000101";
+    constant ap_const_lv32_9 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000001001";
     constant ap_const_lv1_1 : STD_LOGIC_VECTOR (0 downto 0) := "1";
+    constant ap_const_lv32_5 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000101";
+    constant ap_const_lv32_7 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000000111";
+    constant ap_const_lv32_8 : STD_LOGIC_VECTOR (31 downto 0) := "00000000000000000000000000001000";
     constant ap_const_lv2_0 : STD_LOGIC_VECTOR (1 downto 0) := "00";
     constant ap_const_lv4_9 : STD_LOGIC_VECTOR (3 downto 0) := "1001";
     constant ap_const_lv4_1 : STD_LOGIC_VECTOR (3 downto 0) := "0001";
@@ -111,95 +119,185 @@ architecture behav of RAM_INTERFACE is
     signal chunk_y : STD_LOGIC_VECTOR (3 downto 0) := "0000";
     signal chunk_x : STD_LOGIC_VECTOR (3 downto 0) := "0000";
     signal data_blk_n : STD_LOGIC;
-    signal ap_CS_fsm : STD_LOGIC_VECTOR (5 downto 0) := "000001";
+    signal ap_CS_fsm : STD_LOGIC_VECTOR (9 downto 0) := "0000000001";
     attribute fsm_encoding : string;
     attribute fsm_encoding of ap_CS_fsm : signal is "none";
-    signal ap_CS_fsm_state5 : STD_LOGIC;
-    attribute fsm_encoding of ap_CS_fsm_state5 : signal is "none";
+    signal ap_CS_fsm_state7 : STD_LOGIC;
+    attribute fsm_encoding of ap_CS_fsm_state7 : signal is "none";
     signal ap_CS_fsm_state1 : STD_LOGIC;
     attribute fsm_encoding of ap_CS_fsm_state1 : signal is "none";
     signal ap_CS_fsm_state3 : STD_LOGIC;
     attribute fsm_encoding of ap_CS_fsm_state3 : signal is "none";
-    signal grp_fu_211_p3 : STD_LOGIC_VECTOR (11 downto 0);
-    signal base_reg_235 : STD_LOGIC_VECTOR (11 downto 0);
+    signal grp_fu_225_p3 : STD_LOGIC_VECTOR (11 downto 0);
+    signal base_reg_249 : STD_LOGIC_VECTOR (11 downto 0);
     signal ap_CS_fsm_state4 : STD_LOGIC;
     attribute fsm_encoding of ap_CS_fsm_state4 : signal is "none";
-    signal DDR_read_reg_240 : STD_LOGIC_VECTOR (63 downto 0);
-    signal block_reg_245 : STD_LOGIC_VECTOR (1599 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start : STD_LOGIC;
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done : STD_LOGIC;
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_idle : STD_LOGIC;
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_ready : STD_LOGIC;
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWVALID : STD_LOGIC;
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWADDR : STD_LOGIC_VECTOR (63 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWID : STD_LOGIC_VECTOR (0 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWLEN : STD_LOGIC_VECTOR (31 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWSIZE : STD_LOGIC_VECTOR (2 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWBURST : STD_LOGIC_VECTOR (1 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWLOCK : STD_LOGIC_VECTOR (1 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWCACHE : STD_LOGIC_VECTOR (3 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWPROT : STD_LOGIC_VECTOR (2 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWQOS : STD_LOGIC_VECTOR (3 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWREGION : STD_LOGIC_VECTOR (3 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWUSER : STD_LOGIC_VECTOR (0 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WVALID : STD_LOGIC;
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WDATA : STD_LOGIC_VECTOR (63 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WSTRB : STD_LOGIC_VECTOR (7 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WLAST : STD_LOGIC;
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WID : STD_LOGIC_VECTOR (0 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WUSER : STD_LOGIC_VECTOR (0 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARVALID : STD_LOGIC;
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARADDR : STD_LOGIC_VECTOR (63 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARID : STD_LOGIC_VECTOR (0 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARLEN : STD_LOGIC_VECTOR (31 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARSIZE : STD_LOGIC_VECTOR (2 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARBURST : STD_LOGIC_VECTOR (1 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARLOCK : STD_LOGIC_VECTOR (1 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARCACHE : STD_LOGIC_VECTOR (3 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARPROT : STD_LOGIC_VECTOR (2 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARQOS : STD_LOGIC_VECTOR (3 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARREGION : STD_LOGIC_VECTOR (3 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARUSER : STD_LOGIC_VECTOR (0 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_RREADY : STD_LOGIC;
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_BREADY : STD_LOGIC;
+    signal DDR_read_reg_254 : STD_LOGIC_VECTOR (63 downto 0);
+    signal ap_CS_fsm_state5 : STD_LOGIC;
+    attribute fsm_encoding of ap_CS_fsm_state5 : signal is "none";
+    signal block_reg_259 : STD_LOGIC_VECTOR (1599 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_done : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_idle : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_ready : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWVALID : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWADDR : STD_LOGIC_VECTOR (63 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWID : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLEN : STD_LOGIC_VECTOR (31 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWSIZE : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWBURST : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLOCK : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWCACHE : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWPROT : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWQOS : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWREGION : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWUSER : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WVALID : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WDATA : STD_LOGIC_VECTOR (63 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WSTRB : STD_LOGIC_VECTOR (7 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WLAST : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WID : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WUSER : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARVALID : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARADDR : STD_LOGIC_VECTOR (63 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARID : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARLEN : STD_LOGIC_VECTOR (31 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARSIZE : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARBURST : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARLOCK : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARCACHE : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARPROT : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARQOS : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARREGION : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARUSER : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_RREADY : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_BREADY : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_done : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_idle : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_ready : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWVALID : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWADDR : STD_LOGIC_VECTOR (63 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWID : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLEN : STD_LOGIC_VECTOR (31 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWSIZE : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWBURST : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLOCK : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWCACHE : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWPROT : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWQOS : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWREGION : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWUSER : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WVALID : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WDATA : STD_LOGIC_VECTOR (63 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WSTRB : STD_LOGIC_VECTOR (7 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WLAST : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WID : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WUSER : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARVALID : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARADDR : STD_LOGIC_VECTOR (63 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARID : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARLEN : STD_LOGIC_VECTOR (31 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARSIZE : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARBURST : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARLOCK : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARCACHE : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARPROT : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARQOS : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARREGION : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARUSER : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_RREADY : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_BREADY : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_idle : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_ready : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWVALID : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWADDR : STD_LOGIC_VECTOR (63 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWID : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLEN : STD_LOGIC_VECTOR (31 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWSIZE : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWBURST : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLOCK : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWCACHE : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWPROT : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWQOS : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWREGION : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWUSER : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WVALID : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WDATA : STD_LOGIC_VECTOR (63 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WSTRB : STD_LOGIC_VECTOR (7 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WLAST : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WID : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WUSER : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARVALID : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARADDR : STD_LOGIC_VECTOR (63 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARID : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARLEN : STD_LOGIC_VECTOR (31 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARSIZE : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARBURST : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARLOCK : STD_LOGIC_VECTOR (1 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARCACHE : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARPROT : STD_LOGIC_VECTOR (2 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARQOS : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARREGION : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARUSER : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_RREADY : STD_LOGIC;
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_BREADY : STD_LOGIC;
     signal gmem_0_AWVALID : STD_LOGIC;
     signal gmem_0_AWREADY : STD_LOGIC;
+    signal gmem_0_AWADDR : STD_LOGIC_VECTOR (63 downto 0);
+    signal gmem_0_AWLEN : STD_LOGIC_VECTOR (31 downto 0);
     signal gmem_0_WVALID : STD_LOGIC;
     signal gmem_0_WREADY : STD_LOGIC;
+    signal gmem_0_WDATA : STD_LOGIC_VECTOR (63 downto 0);
+    signal gmem_0_WSTRB : STD_LOGIC_VECTOR (7 downto 0);
     signal gmem_0_ARREADY : STD_LOGIC;
     signal gmem_0_RVALID : STD_LOGIC;
     signal gmem_0_RDATA : STD_LOGIC_VECTOR (63 downto 0);
     signal gmem_0_RFIFONUM : STD_LOGIC_VECTOR (8 downto 0);
     signal gmem_0_BVALID : STD_LOGIC;
     signal gmem_0_BREADY : STD_LOGIC;
-    signal ap_phi_mux_last_phi_fu_96_p6 : STD_LOGIC_VECTOR (0 downto 0);
+    signal ap_phi_mux_last_phi_fu_98_p6 : STD_LOGIC_VECTOR (0 downto 0);
+    signal ap_CS_fsm_state10 : STD_LOGIC;
+    attribute fsm_encoding of ap_CS_fsm_state10 : signal is "none";
+    signal icmp_ln64_fu_175_p2 : STD_LOGIC_VECTOR (0 downto 0);
+    signal icmp_ln66_fu_197_p2 : STD_LOGIC_VECTOR (0 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg : STD_LOGIC := '0';
     signal ap_CS_fsm_state6 : STD_LOGIC;
     attribute fsm_encoding of ap_CS_fsm_state6 : signal is "none";
-    signal icmp_ln41_fu_161_p2 : STD_LOGIC_VECTOR (0 downto 0);
-    signal icmp_ln43_fu_183_p2 : STD_LOGIC_VECTOR (0 downto 0);
-    signal grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg : STD_LOGIC := '0';
-    signal add_ln47_fu_188_p2 : STD_LOGIC_VECTOR (3 downto 0);
-    signal add_ln50_fu_166_p2 : STD_LOGIC_VECTOR (3 downto 0);
-    signal tmp_fu_139_p3 : STD_LOGIC_VECTOR (5 downto 0);
-    signal zext_ln26_3_fu_147_p1 : STD_LOGIC_VECTOR (6 downto 0);
-    signal zext_ln26_1_fu_135_p1 : STD_LOGIC_VECTOR (6 downto 0);
-    signal add_ln26_fu_151_p2 : STD_LOGIC_VECTOR (6 downto 0);
-    signal grp_fu_211_p0 : STD_LOGIC_VECTOR (7 downto 0);
-    signal grp_fu_211_p1 : STD_LOGIC_VECTOR (3 downto 0);
-    signal grp_fu_211_p2 : STD_LOGIC_VECTOR (6 downto 0);
-    signal ap_NS_fsm : STD_LOGIC_VECTOR (5 downto 0);
+    signal grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg : STD_LOGIC := '0';
+    signal ap_CS_fsm_state8 : STD_LOGIC;
+    attribute fsm_encoding of ap_CS_fsm_state8 : signal is "none";
+    signal grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg : STD_LOGIC := '0';
+    signal ap_CS_fsm_state9 : STD_LOGIC;
+    attribute fsm_encoding of ap_CS_fsm_state9 : signal is "none";
+    signal add_ln70_fu_202_p2 : STD_LOGIC_VECTOR (3 downto 0);
+    signal add_ln73_fu_180_p2 : STD_LOGIC_VECTOR (3 downto 0);
+    signal tmp_fu_153_p3 : STD_LOGIC_VECTOR (5 downto 0);
+    signal zext_ln39_3_fu_161_p1 : STD_LOGIC_VECTOR (6 downto 0);
+    signal zext_ln39_1_fu_149_p1 : STD_LOGIC_VECTOR (6 downto 0);
+    signal add_ln39_fu_165_p2 : STD_LOGIC_VECTOR (6 downto 0);
+    signal grp_fu_225_p0 : STD_LOGIC_VECTOR (7 downto 0);
+    signal grp_fu_225_p1 : STD_LOGIC_VECTOR (3 downto 0);
+    signal grp_fu_225_p2 : STD_LOGIC_VECTOR (6 downto 0);
+    signal ap_NS_fsm : STD_LOGIC_VECTOR (9 downto 0);
     signal ap_ST_fsm_state1_blk : STD_LOGIC;
     signal ap_ST_fsm_state2_blk : STD_LOGIC;
     signal ap_ST_fsm_state3_blk : STD_LOGIC;
     signal ap_ST_fsm_state4_blk : STD_LOGIC;
     signal ap_ST_fsm_state5_blk : STD_LOGIC;
     signal ap_ST_fsm_state6_blk : STD_LOGIC;
-    signal grp_fu_211_p10 : STD_LOGIC_VECTOR (11 downto 0);
-    signal grp_fu_211_p20 : STD_LOGIC_VECTOR (11 downto 0);
-    signal ap_condition_283 : BOOLEAN;
+    signal ap_ST_fsm_state7_blk : STD_LOGIC;
+    signal ap_ST_fsm_state8_blk : STD_LOGIC;
+    signal ap_ST_fsm_state9_blk : STD_LOGIC;
+    signal ap_ST_fsm_state10_blk : STD_LOGIC;
+    signal grp_fu_225_p10 : STD_LOGIC_VECTOR (11 downto 0);
+    signal grp_fu_225_p20 : STD_LOGIC_VECTOR (11 downto 0);
+    signal ap_condition_417 : BOOLEAN;
     signal ap_ce_reg : STD_LOGIC;
 
-    component RAM_INTERFACE_RAM_INTERFACE_Pipeline_ROWS_COLS IS
+    component RAM_INTERFACE_RAM_INTERFACE_Pipeline_REQUESTS IS
     port (
         ap_clk : IN STD_LOGIC;
         ap_rst : IN STD_LOGIC;
@@ -253,9 +351,123 @@ architecture behav of RAM_INTERFACE is
         m_axi_gmem_0_BRESP : IN STD_LOGIC_VECTOR (1 downto 0);
         m_axi_gmem_0_BID : IN STD_LOGIC_VECTOR (0 downto 0);
         m_axi_gmem_0_BUSER : IN STD_LOGIC_VECTOR (0 downto 0);
-        block_r : IN STD_LOGIC_VECTOR (1599 downto 0);
         base_r : IN STD_LOGIC_VECTOR (11 downto 0);
         DDR : IN STD_LOGIC_VECTOR (63 downto 0) );
+    end component;
+
+
+    component RAM_INTERFACE_RAM_INTERFACE_Pipeline_BEATS IS
+    port (
+        ap_clk : IN STD_LOGIC;
+        ap_rst : IN STD_LOGIC;
+        ap_start : IN STD_LOGIC;
+        ap_done : OUT STD_LOGIC;
+        ap_idle : OUT STD_LOGIC;
+        ap_ready : OUT STD_LOGIC;
+        m_axi_gmem_0_AWVALID : OUT STD_LOGIC;
+        m_axi_gmem_0_AWREADY : IN STD_LOGIC;
+        m_axi_gmem_0_AWADDR : OUT STD_LOGIC_VECTOR (63 downto 0);
+        m_axi_gmem_0_AWID : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_AWLEN : OUT STD_LOGIC_VECTOR (31 downto 0);
+        m_axi_gmem_0_AWSIZE : OUT STD_LOGIC_VECTOR (2 downto 0);
+        m_axi_gmem_0_AWBURST : OUT STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_AWLOCK : OUT STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_AWCACHE : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_AWPROT : OUT STD_LOGIC_VECTOR (2 downto 0);
+        m_axi_gmem_0_AWQOS : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_AWREGION : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_AWUSER : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_WVALID : OUT STD_LOGIC;
+        m_axi_gmem_0_WREADY : IN STD_LOGIC;
+        m_axi_gmem_0_WDATA : OUT STD_LOGIC_VECTOR (63 downto 0);
+        m_axi_gmem_0_WSTRB : OUT STD_LOGIC_VECTOR (7 downto 0);
+        m_axi_gmem_0_WLAST : OUT STD_LOGIC;
+        m_axi_gmem_0_WID : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_WUSER : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_ARVALID : OUT STD_LOGIC;
+        m_axi_gmem_0_ARREADY : IN STD_LOGIC;
+        m_axi_gmem_0_ARADDR : OUT STD_LOGIC_VECTOR (63 downto 0);
+        m_axi_gmem_0_ARID : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_ARLEN : OUT STD_LOGIC_VECTOR (31 downto 0);
+        m_axi_gmem_0_ARSIZE : OUT STD_LOGIC_VECTOR (2 downto 0);
+        m_axi_gmem_0_ARBURST : OUT STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_ARLOCK : OUT STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_ARCACHE : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_ARPROT : OUT STD_LOGIC_VECTOR (2 downto 0);
+        m_axi_gmem_0_ARQOS : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_ARREGION : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_ARUSER : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_RVALID : IN STD_LOGIC;
+        m_axi_gmem_0_RREADY : OUT STD_LOGIC;
+        m_axi_gmem_0_RDATA : IN STD_LOGIC_VECTOR (63 downto 0);
+        m_axi_gmem_0_RLAST : IN STD_LOGIC;
+        m_axi_gmem_0_RID : IN STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_RFIFONUM : IN STD_LOGIC_VECTOR (8 downto 0);
+        m_axi_gmem_0_RUSER : IN STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_RRESP : IN STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_BVALID : IN STD_LOGIC;
+        m_axi_gmem_0_BREADY : OUT STD_LOGIC;
+        m_axi_gmem_0_BRESP : IN STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_BID : IN STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_BUSER : IN STD_LOGIC_VECTOR (0 downto 0);
+        block_r : IN STD_LOGIC_VECTOR (1599 downto 0) );
+    end component;
+
+
+    component RAM_INTERFACE_RAM_INTERFACE_Pipeline_RESPONSES IS
+    port (
+        ap_clk : IN STD_LOGIC;
+        ap_rst : IN STD_LOGIC;
+        ap_start : IN STD_LOGIC;
+        ap_done : OUT STD_LOGIC;
+        ap_idle : OUT STD_LOGIC;
+        ap_ready : OUT STD_LOGIC;
+        m_axi_gmem_0_AWVALID : OUT STD_LOGIC;
+        m_axi_gmem_0_AWREADY : IN STD_LOGIC;
+        m_axi_gmem_0_AWADDR : OUT STD_LOGIC_VECTOR (63 downto 0);
+        m_axi_gmem_0_AWID : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_AWLEN : OUT STD_LOGIC_VECTOR (31 downto 0);
+        m_axi_gmem_0_AWSIZE : OUT STD_LOGIC_VECTOR (2 downto 0);
+        m_axi_gmem_0_AWBURST : OUT STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_AWLOCK : OUT STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_AWCACHE : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_AWPROT : OUT STD_LOGIC_VECTOR (2 downto 0);
+        m_axi_gmem_0_AWQOS : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_AWREGION : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_AWUSER : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_WVALID : OUT STD_LOGIC;
+        m_axi_gmem_0_WREADY : IN STD_LOGIC;
+        m_axi_gmem_0_WDATA : OUT STD_LOGIC_VECTOR (63 downto 0);
+        m_axi_gmem_0_WSTRB : OUT STD_LOGIC_VECTOR (7 downto 0);
+        m_axi_gmem_0_WLAST : OUT STD_LOGIC;
+        m_axi_gmem_0_WID : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_WUSER : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_ARVALID : OUT STD_LOGIC;
+        m_axi_gmem_0_ARREADY : IN STD_LOGIC;
+        m_axi_gmem_0_ARADDR : OUT STD_LOGIC_VECTOR (63 downto 0);
+        m_axi_gmem_0_ARID : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_ARLEN : OUT STD_LOGIC_VECTOR (31 downto 0);
+        m_axi_gmem_0_ARSIZE : OUT STD_LOGIC_VECTOR (2 downto 0);
+        m_axi_gmem_0_ARBURST : OUT STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_ARLOCK : OUT STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_ARCACHE : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_ARPROT : OUT STD_LOGIC_VECTOR (2 downto 0);
+        m_axi_gmem_0_ARQOS : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_ARREGION : OUT STD_LOGIC_VECTOR (3 downto 0);
+        m_axi_gmem_0_ARUSER : OUT STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_RVALID : IN STD_LOGIC;
+        m_axi_gmem_0_RREADY : OUT STD_LOGIC;
+        m_axi_gmem_0_RDATA : IN STD_LOGIC_VECTOR (63 downto 0);
+        m_axi_gmem_0_RLAST : IN STD_LOGIC;
+        m_axi_gmem_0_RID : IN STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_RFIFONUM : IN STD_LOGIC_VECTOR (8 downto 0);
+        m_axi_gmem_0_RUSER : IN STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_RRESP : IN STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_BVALID : IN STD_LOGIC;
+        m_axi_gmem_0_BREADY : OUT STD_LOGIC;
+        m_axi_gmem_0_BRESP : IN STD_LOGIC_VECTOR (1 downto 0);
+        m_axi_gmem_0_BID : IN STD_LOGIC_VECTOR (0 downto 0);
+        m_axi_gmem_0_BUSER : IN STD_LOGIC_VECTOR (0 downto 0) );
     end component;
 
 
@@ -374,49 +586,49 @@ architecture behav of RAM_INTERFACE is
 
 
 begin
-    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107 : component RAM_INTERFACE_RAM_INTERFACE_Pipeline_ROWS_COLS
+    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109 : component RAM_INTERFACE_RAM_INTERFACE_Pipeline_REQUESTS
     port map (
         ap_clk => ap_clk,
         ap_rst => ap_rst_n_inv,
-        ap_start => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start,
-        ap_done => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done,
-        ap_idle => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_idle,
-        ap_ready => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_ready,
-        m_axi_gmem_0_AWVALID => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWVALID,
+        ap_start => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start,
+        ap_done => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_done,
+        ap_idle => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_idle,
+        ap_ready => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_ready,
+        m_axi_gmem_0_AWVALID => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWVALID,
         m_axi_gmem_0_AWREADY => gmem_0_AWREADY,
-        m_axi_gmem_0_AWADDR => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWADDR,
-        m_axi_gmem_0_AWID => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWID,
-        m_axi_gmem_0_AWLEN => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWLEN,
-        m_axi_gmem_0_AWSIZE => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWSIZE,
-        m_axi_gmem_0_AWBURST => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWBURST,
-        m_axi_gmem_0_AWLOCK => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWLOCK,
-        m_axi_gmem_0_AWCACHE => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWCACHE,
-        m_axi_gmem_0_AWPROT => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWPROT,
-        m_axi_gmem_0_AWQOS => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWQOS,
-        m_axi_gmem_0_AWREGION => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWREGION,
-        m_axi_gmem_0_AWUSER => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWUSER,
-        m_axi_gmem_0_WVALID => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WVALID,
+        m_axi_gmem_0_AWADDR => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWADDR,
+        m_axi_gmem_0_AWID => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWID,
+        m_axi_gmem_0_AWLEN => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLEN,
+        m_axi_gmem_0_AWSIZE => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWSIZE,
+        m_axi_gmem_0_AWBURST => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWBURST,
+        m_axi_gmem_0_AWLOCK => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLOCK,
+        m_axi_gmem_0_AWCACHE => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWCACHE,
+        m_axi_gmem_0_AWPROT => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWPROT,
+        m_axi_gmem_0_AWQOS => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWQOS,
+        m_axi_gmem_0_AWREGION => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWREGION,
+        m_axi_gmem_0_AWUSER => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWUSER,
+        m_axi_gmem_0_WVALID => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WVALID,
         m_axi_gmem_0_WREADY => gmem_0_WREADY,
-        m_axi_gmem_0_WDATA => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WDATA,
-        m_axi_gmem_0_WSTRB => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WSTRB,
-        m_axi_gmem_0_WLAST => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WLAST,
-        m_axi_gmem_0_WID => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WID,
-        m_axi_gmem_0_WUSER => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WUSER,
-        m_axi_gmem_0_ARVALID => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARVALID,
+        m_axi_gmem_0_WDATA => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WDATA,
+        m_axi_gmem_0_WSTRB => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WSTRB,
+        m_axi_gmem_0_WLAST => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WLAST,
+        m_axi_gmem_0_WID => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WID,
+        m_axi_gmem_0_WUSER => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WUSER,
+        m_axi_gmem_0_ARVALID => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARVALID,
         m_axi_gmem_0_ARREADY => ap_const_logic_0,
-        m_axi_gmem_0_ARADDR => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARADDR,
-        m_axi_gmem_0_ARID => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARID,
-        m_axi_gmem_0_ARLEN => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARLEN,
-        m_axi_gmem_0_ARSIZE => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARSIZE,
-        m_axi_gmem_0_ARBURST => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARBURST,
-        m_axi_gmem_0_ARLOCK => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARLOCK,
-        m_axi_gmem_0_ARCACHE => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARCACHE,
-        m_axi_gmem_0_ARPROT => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARPROT,
-        m_axi_gmem_0_ARQOS => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARQOS,
-        m_axi_gmem_0_ARREGION => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARREGION,
-        m_axi_gmem_0_ARUSER => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_ARUSER,
+        m_axi_gmem_0_ARADDR => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARADDR,
+        m_axi_gmem_0_ARID => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARID,
+        m_axi_gmem_0_ARLEN => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARLEN,
+        m_axi_gmem_0_ARSIZE => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARSIZE,
+        m_axi_gmem_0_ARBURST => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARBURST,
+        m_axi_gmem_0_ARLOCK => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARLOCK,
+        m_axi_gmem_0_ARCACHE => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARCACHE,
+        m_axi_gmem_0_ARPROT => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARPROT,
+        m_axi_gmem_0_ARQOS => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARQOS,
+        m_axi_gmem_0_ARREGION => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARREGION,
+        m_axi_gmem_0_ARUSER => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_ARUSER,
         m_axi_gmem_0_RVALID => ap_const_logic_0,
-        m_axi_gmem_0_RREADY => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_RREADY,
+        m_axi_gmem_0_RREADY => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_RREADY,
         m_axi_gmem_0_RDATA => ap_const_lv64_0,
         m_axi_gmem_0_RLAST => ap_const_logic_0,
         m_axi_gmem_0_RID => ap_const_lv1_0,
@@ -424,13 +636,123 @@ begin
         m_axi_gmem_0_RUSER => ap_const_lv1_0,
         m_axi_gmem_0_RRESP => ap_const_lv2_0,
         m_axi_gmem_0_BVALID => gmem_0_BVALID,
-        m_axi_gmem_0_BREADY => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_BREADY,
+        m_axi_gmem_0_BREADY => grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_BREADY,
         m_axi_gmem_0_BRESP => ap_const_lv2_0,
         m_axi_gmem_0_BID => ap_const_lv1_0,
         m_axi_gmem_0_BUSER => ap_const_lv1_0,
-        block_r => block_reg_245,
-        base_r => base_reg_235,
-        DDR => DDR_read_reg_240);
+        base_r => base_reg_249,
+        DDR => DDR_read_reg_254);
+
+    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118 : component RAM_INTERFACE_RAM_INTERFACE_Pipeline_BEATS
+    port map (
+        ap_clk => ap_clk,
+        ap_rst => ap_rst_n_inv,
+        ap_start => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start,
+        ap_done => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_done,
+        ap_idle => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_idle,
+        ap_ready => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_ready,
+        m_axi_gmem_0_AWVALID => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWVALID,
+        m_axi_gmem_0_AWREADY => gmem_0_AWREADY,
+        m_axi_gmem_0_AWADDR => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWADDR,
+        m_axi_gmem_0_AWID => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWID,
+        m_axi_gmem_0_AWLEN => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLEN,
+        m_axi_gmem_0_AWSIZE => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWSIZE,
+        m_axi_gmem_0_AWBURST => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWBURST,
+        m_axi_gmem_0_AWLOCK => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLOCK,
+        m_axi_gmem_0_AWCACHE => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWCACHE,
+        m_axi_gmem_0_AWPROT => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWPROT,
+        m_axi_gmem_0_AWQOS => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWQOS,
+        m_axi_gmem_0_AWREGION => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWREGION,
+        m_axi_gmem_0_AWUSER => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWUSER,
+        m_axi_gmem_0_WVALID => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WVALID,
+        m_axi_gmem_0_WREADY => gmem_0_WREADY,
+        m_axi_gmem_0_WDATA => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WDATA,
+        m_axi_gmem_0_WSTRB => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WSTRB,
+        m_axi_gmem_0_WLAST => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WLAST,
+        m_axi_gmem_0_WID => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WID,
+        m_axi_gmem_0_WUSER => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WUSER,
+        m_axi_gmem_0_ARVALID => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARVALID,
+        m_axi_gmem_0_ARREADY => ap_const_logic_0,
+        m_axi_gmem_0_ARADDR => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARADDR,
+        m_axi_gmem_0_ARID => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARID,
+        m_axi_gmem_0_ARLEN => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARLEN,
+        m_axi_gmem_0_ARSIZE => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARSIZE,
+        m_axi_gmem_0_ARBURST => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARBURST,
+        m_axi_gmem_0_ARLOCK => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARLOCK,
+        m_axi_gmem_0_ARCACHE => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARCACHE,
+        m_axi_gmem_0_ARPROT => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARPROT,
+        m_axi_gmem_0_ARQOS => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARQOS,
+        m_axi_gmem_0_ARREGION => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARREGION,
+        m_axi_gmem_0_ARUSER => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_ARUSER,
+        m_axi_gmem_0_RVALID => ap_const_logic_0,
+        m_axi_gmem_0_RREADY => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_RREADY,
+        m_axi_gmem_0_RDATA => ap_const_lv64_0,
+        m_axi_gmem_0_RLAST => ap_const_logic_0,
+        m_axi_gmem_0_RID => ap_const_lv1_0,
+        m_axi_gmem_0_RFIFONUM => ap_const_lv9_0,
+        m_axi_gmem_0_RUSER => ap_const_lv1_0,
+        m_axi_gmem_0_RRESP => ap_const_lv2_0,
+        m_axi_gmem_0_BVALID => gmem_0_BVALID,
+        m_axi_gmem_0_BREADY => grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_BREADY,
+        m_axi_gmem_0_BRESP => ap_const_lv2_0,
+        m_axi_gmem_0_BID => ap_const_lv1_0,
+        m_axi_gmem_0_BUSER => ap_const_lv1_0,
+        block_r => block_reg_259);
+
+    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126 : component RAM_INTERFACE_RAM_INTERFACE_Pipeline_RESPONSES
+    port map (
+        ap_clk => ap_clk,
+        ap_rst => ap_rst_n_inv,
+        ap_start => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start,
+        ap_done => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done,
+        ap_idle => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_idle,
+        ap_ready => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_ready,
+        m_axi_gmem_0_AWVALID => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWVALID,
+        m_axi_gmem_0_AWREADY => gmem_0_AWREADY,
+        m_axi_gmem_0_AWADDR => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWADDR,
+        m_axi_gmem_0_AWID => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWID,
+        m_axi_gmem_0_AWLEN => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLEN,
+        m_axi_gmem_0_AWSIZE => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWSIZE,
+        m_axi_gmem_0_AWBURST => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWBURST,
+        m_axi_gmem_0_AWLOCK => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLOCK,
+        m_axi_gmem_0_AWCACHE => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWCACHE,
+        m_axi_gmem_0_AWPROT => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWPROT,
+        m_axi_gmem_0_AWQOS => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWQOS,
+        m_axi_gmem_0_AWREGION => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWREGION,
+        m_axi_gmem_0_AWUSER => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWUSER,
+        m_axi_gmem_0_WVALID => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WVALID,
+        m_axi_gmem_0_WREADY => gmem_0_WREADY,
+        m_axi_gmem_0_WDATA => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WDATA,
+        m_axi_gmem_0_WSTRB => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WSTRB,
+        m_axi_gmem_0_WLAST => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WLAST,
+        m_axi_gmem_0_WID => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WID,
+        m_axi_gmem_0_WUSER => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WUSER,
+        m_axi_gmem_0_ARVALID => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARVALID,
+        m_axi_gmem_0_ARREADY => ap_const_logic_0,
+        m_axi_gmem_0_ARADDR => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARADDR,
+        m_axi_gmem_0_ARID => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARID,
+        m_axi_gmem_0_ARLEN => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARLEN,
+        m_axi_gmem_0_ARSIZE => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARSIZE,
+        m_axi_gmem_0_ARBURST => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARBURST,
+        m_axi_gmem_0_ARLOCK => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARLOCK,
+        m_axi_gmem_0_ARCACHE => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARCACHE,
+        m_axi_gmem_0_ARPROT => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARPROT,
+        m_axi_gmem_0_ARQOS => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARQOS,
+        m_axi_gmem_0_ARREGION => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARREGION,
+        m_axi_gmem_0_ARUSER => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_ARUSER,
+        m_axi_gmem_0_RVALID => ap_const_logic_0,
+        m_axi_gmem_0_RREADY => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_RREADY,
+        m_axi_gmem_0_RDATA => ap_const_lv64_0,
+        m_axi_gmem_0_RLAST => ap_const_logic_0,
+        m_axi_gmem_0_RID => ap_const_lv1_0,
+        m_axi_gmem_0_RFIFONUM => ap_const_lv9_0,
+        m_axi_gmem_0_RUSER => ap_const_lv1_0,
+        m_axi_gmem_0_RRESP => ap_const_lv2_0,
+        m_axi_gmem_0_BVALID => gmem_0_BVALID,
+        m_axi_gmem_0_BREADY => grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_BREADY,
+        m_axi_gmem_0_BRESP => ap_const_lv2_0,
+        m_axi_gmem_0_BID => ap_const_lv1_0,
+        m_axi_gmem_0_BUSER => ap_const_lv1_0);
 
     gmem_m_axi_U : component RAM_INTERFACE_gmem_m_axi
     generic map (
@@ -450,12 +772,12 @@ begin
         C_PROT_VALUE => C_M_AXI_GMEM_PROT_VALUE,
         C_CACHE_VALUE => C_M_AXI_GMEM_CACHE_VALUE,
         CH0_NUM_READ_OUTSTANDING => 16,
-        CH0_NUM_WRITE_OUTSTANDING => 4,
+        CH0_NUM_WRITE_OUTSTANDING => 8,
         CH0_USER_RFIFONUM_WIDTH => 9,
         CH0_USER_DW => 64,
         CH0_USER_AW => 64,
         NUM_READ_OUTSTANDING => 0,
-        NUM_WRITE_OUTSTANDING => 4)
+        NUM_WRITE_OUTSTANDING => 8)
     port map (
         AWVALID => m_axi_gmem_AWVALID,
         AWREADY => m_axi_gmem_AWREADY,
@@ -515,12 +837,12 @@ begin
         I_CH0_RFIFONUM => gmem_0_RFIFONUM,
         I_CH0_AWVALID => gmem_0_AWVALID,
         I_CH0_AWREADY => gmem_0_AWREADY,
-        I_CH0_AWADDR => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWADDR,
-        I_CH0_AWLEN => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWLEN,
+        I_CH0_AWADDR => gmem_0_AWADDR,
+        I_CH0_AWLEN => gmem_0_AWLEN,
         I_CH0_WVALID => gmem_0_WVALID,
         I_CH0_WREADY => gmem_0_WREADY,
-        I_CH0_WDATA => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WDATA,
-        I_CH0_WSTRB => grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WSTRB,
+        I_CH0_WDATA => gmem_0_WDATA,
+        I_CH0_WSTRB => gmem_0_WSTRB,
         I_CH0_BVALID => gmem_0_BVALID,
         I_CH0_BREADY => gmem_0_BREADY);
 
@@ -535,11 +857,11 @@ begin
     port map (
         clk => ap_clk,
         reset => ap_rst_n_inv,
-        din0 => grp_fu_211_p0,
-        din1 => grp_fu_211_p1,
-        din2 => grp_fu_211_p2,
+        din0 => grp_fu_225_p0,
+        din1 => grp_fu_225_p1,
+        din2 => grp_fu_225_p2,
         ce => ap_const_logic_1,
-        dout => grp_fu_211_p3);
+        dout => grp_fu_225_p3);
 
 
 
@@ -557,16 +879,48 @@ begin
     end process;
 
 
-    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg_assign_proc : process(ap_clk)
+    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg_assign_proc : process(ap_clk)
     begin
         if (ap_clk'event and ap_clk =  '1') then
             if (ap_rst_n_inv = '1') then
-                grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg <= ap_const_logic_0;
+                grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg <= ap_const_logic_0;
             else
-                if (((data_empty_n = ap_const_logic_1) and (ap_const_logic_1 = ap_CS_fsm_state5))) then 
-                    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg <= ap_const_logic_1;
-                elsif ((grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_ready = ap_const_logic_1)) then 
-                    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg <= ap_const_logic_0;
+                if (((data_empty_n = ap_const_logic_1) and (ap_const_logic_1 = ap_CS_fsm_state7))) then 
+                    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg <= ap_const_logic_1;
+                elsif ((grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_ready = ap_const_logic_1)) then 
+                    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg <= ap_const_logic_0;
+                end if; 
+            end if;
+        end if;
+    end process;
+
+
+    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg_assign_proc : process(ap_clk)
+    begin
+        if (ap_clk'event and ap_clk =  '1') then
+            if (ap_rst_n_inv = '1') then
+                grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg <= ap_const_logic_0;
+            else
+                if ((ap_const_logic_1 = ap_CS_fsm_state5)) then 
+                    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg <= ap_const_logic_1;
+                elsif ((grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_ready = ap_const_logic_1)) then 
+                    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg <= ap_const_logic_0;
+                end if; 
+            end if;
+        end if;
+    end process;
+
+
+    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg_assign_proc : process(ap_clk)
+    begin
+        if (ap_clk'event and ap_clk =  '1') then
+            if (ap_rst_n_inv = '1') then
+                grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg <= ap_const_logic_0;
+            else
+                if ((ap_const_logic_1 = ap_CS_fsm_state9)) then 
+                    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg <= ap_const_logic_1;
+                elsif ((grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_ready = ap_const_logic_1)) then 
+                    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg <= ap_const_logic_0;
                 end if; 
             end if;
         end if;
@@ -576,11 +930,11 @@ begin
     chunk_x_assign_proc : process (ap_clk)
     begin
         if (ap_clk'event and ap_clk = '1') then
-            if (((ap_const_logic_1 = ap_CS_fsm_state6) and (grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done = ap_const_logic_1))) then
-                if ((icmp_ln41_fu_161_p2 = ap_const_lv1_1)) then 
+            if (((grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done = ap_const_logic_1) and (ap_const_logic_1 = ap_CS_fsm_state10))) then
+                if ((icmp_ln64_fu_175_p2 = ap_const_lv1_1)) then 
                     chunk_x <= ap_const_lv4_0;
-                elsif ((icmp_ln41_fu_161_p2 = ap_const_lv1_0)) then 
-                    chunk_x <= add_ln50_fu_166_p2;
+                elsif ((icmp_ln64_fu_175_p2 = ap_const_lv1_0)) then 
+                    chunk_x <= add_ln73_fu_180_p2;
                 end if;
             end if; 
         end if;
@@ -589,11 +943,11 @@ begin
     chunk_y_assign_proc : process (ap_clk)
     begin
         if (ap_clk'event and ap_clk = '1') then
-            if ((ap_const_boolean_1 = ap_condition_283)) then
-                if ((icmp_ln43_fu_183_p2 = ap_const_lv1_1)) then 
+            if ((ap_const_boolean_1 = ap_condition_417)) then
+                if ((icmp_ln66_fu_197_p2 = ap_const_lv1_1)) then 
                     chunk_y <= ap_const_lv4_0;
-                elsif ((icmp_ln43_fu_183_p2 = ap_const_lv1_0)) then 
-                    chunk_y <= add_ln47_fu_188_p2;
+                elsif ((icmp_ln66_fu_197_p2 = ap_const_lv1_0)) then 
+                    chunk_y <= add_ln70_fu_202_p2;
                 end if;
             end if; 
         end if;
@@ -602,8 +956,7 @@ begin
     begin
         if (ap_clk'event and ap_clk = '1') then
             if ((ap_const_logic_1 = ap_CS_fsm_state5)) then
-                DDR_read_reg_240 <= DDR;
-                block_reg_245 <= data_dout;
+                DDR_read_reg_254 <= DDR;
             end if;
         end if;
     end process;
@@ -611,20 +964,28 @@ begin
     begin
         if (ap_clk'event and ap_clk = '1') then
             if ((ap_const_logic_1 = ap_CS_fsm_state4)) then
-                base_reg_235 <= grp_fu_211_p3;
+                base_reg_249 <= grp_fu_225_p3;
             end if;
         end if;
     end process;
     process (ap_clk)
     begin
         if (ap_clk'event and ap_clk = '1') then
-            if (((ap_const_logic_1 = ap_CS_fsm_state6) and (grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done = ap_const_logic_1))) then
-                last_written <= ap_phi_mux_last_phi_fu_96_p6;
+            if ((ap_const_logic_1 = ap_CS_fsm_state7)) then
+                block_reg_259 <= data_dout;
+            end if;
+        end if;
+    end process;
+    process (ap_clk)
+    begin
+        if (ap_clk'event and ap_clk = '1') then
+            if (((grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done = ap_const_logic_1) and (ap_const_logic_1 = ap_CS_fsm_state10))) then
+                last_written <= ap_phi_mux_last_phi_fu_98_p6;
             end if;
         end if;
     end process;
 
-    ap_NS_fsm_assign_proc : process (data_empty_n, ap_CS_fsm, ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done, ap_CS_fsm_state6)
+    ap_NS_fsm_assign_proc : process (data_empty_n, ap_CS_fsm, ap_CS_fsm_state7, grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_done, grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_done, grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done, ap_CS_fsm_state10, ap_CS_fsm_state6, ap_CS_fsm_state8)
     begin
         case ap_CS_fsm is
             when ap_ST_fsm_state1 => 
@@ -636,47 +997,68 @@ begin
             when ap_ST_fsm_state4 => 
                 ap_NS_fsm <= ap_ST_fsm_state5;
             when ap_ST_fsm_state5 => 
-                if (((data_empty_n = ap_const_logic_1) and (ap_const_logic_1 = ap_CS_fsm_state5))) then
-                    ap_NS_fsm <= ap_ST_fsm_state6;
-                else
-                    ap_NS_fsm <= ap_ST_fsm_state5;
-                end if;
+                ap_NS_fsm <= ap_ST_fsm_state6;
             when ap_ST_fsm_state6 => 
-                if (((ap_const_logic_1 = ap_CS_fsm_state6) and (grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done = ap_const_logic_1))) then
+                if (((ap_const_logic_1 = ap_CS_fsm_state6) and (grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_done = ap_const_logic_1))) then
+                    ap_NS_fsm <= ap_ST_fsm_state7;
+                else
+                    ap_NS_fsm <= ap_ST_fsm_state6;
+                end if;
+            when ap_ST_fsm_state7 => 
+                if (((data_empty_n = ap_const_logic_1) and (ap_const_logic_1 = ap_CS_fsm_state7))) then
+                    ap_NS_fsm <= ap_ST_fsm_state8;
+                else
+                    ap_NS_fsm <= ap_ST_fsm_state7;
+                end if;
+            when ap_ST_fsm_state8 => 
+                if (((ap_const_logic_1 = ap_CS_fsm_state8) and (grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_done = ap_const_logic_1))) then
+                    ap_NS_fsm <= ap_ST_fsm_state9;
+                else
+                    ap_NS_fsm <= ap_ST_fsm_state8;
+                end if;
+            when ap_ST_fsm_state9 => 
+                ap_NS_fsm <= ap_ST_fsm_state10;
+            when ap_ST_fsm_state10 => 
+                if (((grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done = ap_const_logic_1) and (ap_const_logic_1 = ap_CS_fsm_state10))) then
                     ap_NS_fsm <= ap_ST_fsm_state1;
                 else
-                    ap_NS_fsm <= ap_ST_fsm_state6;
+                    ap_NS_fsm <= ap_ST_fsm_state10;
                 end if;
             when others =>  
-                ap_NS_fsm <= "XXXXXX";
+                ap_NS_fsm <= "XXXXXXXXXX";
         end case;
     end process;
-    add_ln26_fu_151_p2 <= std_logic_vector(unsigned(zext_ln26_3_fu_147_p1) + unsigned(zext_ln26_1_fu_135_p1));
-    add_ln47_fu_188_p2 <= std_logic_vector(unsigned(chunk_y) + unsigned(ap_const_lv4_1));
-    add_ln50_fu_166_p2 <= std_logic_vector(unsigned(chunk_x) + unsigned(ap_const_lv4_1));
+    add_ln39_fu_165_p2 <= std_logic_vector(unsigned(zext_ln39_3_fu_161_p1) + unsigned(zext_ln39_1_fu_149_p1));
+    add_ln70_fu_202_p2 <= std_logic_vector(unsigned(chunk_y) + unsigned(ap_const_lv4_1));
+    add_ln73_fu_180_p2 <= std_logic_vector(unsigned(chunk_x) + unsigned(ap_const_lv4_1));
     ap_CS_fsm_state1 <= ap_CS_fsm(0);
+    ap_CS_fsm_state10 <= ap_CS_fsm(9);
     ap_CS_fsm_state3 <= ap_CS_fsm(2);
     ap_CS_fsm_state4 <= ap_CS_fsm(3);
     ap_CS_fsm_state5 <= ap_CS_fsm(4);
     ap_CS_fsm_state6 <= ap_CS_fsm(5);
+    ap_CS_fsm_state7 <= ap_CS_fsm(6);
+    ap_CS_fsm_state8 <= ap_CS_fsm(7);
+    ap_CS_fsm_state9 <= ap_CS_fsm(8);
+
+    ap_ST_fsm_state10_blk_assign_proc : process(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done)
+    begin
+        if ((grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done = ap_const_logic_0)) then 
+            ap_ST_fsm_state10_blk <= ap_const_logic_1;
+        else 
+            ap_ST_fsm_state10_blk <= ap_const_logic_0;
+        end if; 
+    end process;
+
     ap_ST_fsm_state1_blk <= ap_const_logic_0;
     ap_ST_fsm_state2_blk <= ap_const_logic_0;
     ap_ST_fsm_state3_blk <= ap_const_logic_0;
     ap_ST_fsm_state4_blk <= ap_const_logic_0;
+    ap_ST_fsm_state5_blk <= ap_const_logic_0;
 
-    ap_ST_fsm_state5_blk_assign_proc : process(data_empty_n)
+    ap_ST_fsm_state6_blk_assign_proc : process(grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_done)
     begin
-        if ((data_empty_n = ap_const_logic_0)) then 
-            ap_ST_fsm_state5_blk <= ap_const_logic_1;
-        else 
-            ap_ST_fsm_state5_blk <= ap_const_logic_0;
-        end if; 
-    end process;
-
-
-    ap_ST_fsm_state6_blk_assign_proc : process(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done)
-    begin
-        if ((grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done = ap_const_logic_0)) then 
+        if ((grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_done = ap_const_logic_0)) then 
             ap_ST_fsm_state6_blk <= ap_const_logic_1;
         else 
             ap_ST_fsm_state6_blk <= ap_const_logic_0;
@@ -684,20 +1066,41 @@ begin
     end process;
 
 
-    ap_condition_283_assign_proc : process(grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done, ap_CS_fsm_state6, icmp_ln41_fu_161_p2)
+    ap_ST_fsm_state7_blk_assign_proc : process(data_empty_n)
     begin
-                ap_condition_283 <= ((icmp_ln41_fu_161_p2 = ap_const_lv1_1) and (ap_const_logic_1 = ap_CS_fsm_state6) and (grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_done = ap_const_logic_1));
+        if ((data_empty_n = ap_const_logic_0)) then 
+            ap_ST_fsm_state7_blk <= ap_const_logic_1;
+        else 
+            ap_ST_fsm_state7_blk <= ap_const_logic_0;
+        end if; 
     end process;
 
 
-    ap_phi_mux_last_phi_fu_96_p6_assign_proc : process(ap_CS_fsm_state6, icmp_ln41_fu_161_p2, icmp_ln43_fu_183_p2)
+    ap_ST_fsm_state8_blk_assign_proc : process(grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_done)
     begin
-        if (((icmp_ln43_fu_183_p2 = ap_const_lv1_1) and (icmp_ln41_fu_161_p2 = ap_const_lv1_1) and (ap_const_logic_1 = ap_CS_fsm_state6))) then 
-            ap_phi_mux_last_phi_fu_96_p6 <= ap_const_lv1_1;
-        elsif ((((icmp_ln43_fu_183_p2 = ap_const_lv1_0) and (icmp_ln41_fu_161_p2 = ap_const_lv1_1) and (ap_const_logic_1 = ap_CS_fsm_state6)) or ((icmp_ln41_fu_161_p2 = ap_const_lv1_0) and (ap_const_logic_1 = ap_CS_fsm_state6)))) then 
-            ap_phi_mux_last_phi_fu_96_p6 <= ap_const_lv1_0;
+        if ((grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_done = ap_const_logic_0)) then 
+            ap_ST_fsm_state8_blk <= ap_const_logic_1;
         else 
-            ap_phi_mux_last_phi_fu_96_p6 <= "X";
+            ap_ST_fsm_state8_blk <= ap_const_logic_0;
+        end if; 
+    end process;
+
+    ap_ST_fsm_state9_blk <= ap_const_logic_0;
+
+    ap_condition_417_assign_proc : process(grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done, ap_CS_fsm_state10, icmp_ln64_fu_175_p2)
+    begin
+                ap_condition_417 <= ((icmp_ln64_fu_175_p2 = ap_const_lv1_1) and (grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_done = ap_const_logic_1) and (ap_const_logic_1 = ap_CS_fsm_state10));
+    end process;
+
+
+    ap_phi_mux_last_phi_fu_98_p6_assign_proc : process(ap_CS_fsm_state10, icmp_ln64_fu_175_p2, icmp_ln66_fu_197_p2)
+    begin
+        if (((icmp_ln66_fu_197_p2 = ap_const_lv1_1) and (icmp_ln64_fu_175_p2 = ap_const_lv1_1) and (ap_const_logic_1 = ap_CS_fsm_state10))) then 
+            ap_phi_mux_last_phi_fu_98_p6 <= ap_const_lv1_1;
+        elsif ((((icmp_ln66_fu_197_p2 = ap_const_lv1_0) and (icmp_ln64_fu_175_p2 = ap_const_lv1_1) and (ap_const_logic_1 = ap_CS_fsm_state10)) or ((icmp_ln64_fu_175_p2 = ap_const_lv1_0) and (ap_const_logic_1 = ap_CS_fsm_state10)))) then 
+            ap_phi_mux_last_phi_fu_98_p6 <= ap_const_lv1_0;
+        else 
+            ap_phi_mux_last_phi_fu_98_p6 <= "X";
         end if; 
     end process;
 
@@ -708,9 +1111,9 @@ begin
     end process;
 
 
-    data_blk_n_assign_proc : process(data_empty_n, ap_CS_fsm_state5)
+    data_blk_n_assign_proc : process(data_empty_n, ap_CS_fsm_state7)
     begin
-        if ((ap_const_logic_1 = ap_CS_fsm_state5)) then 
+        if ((ap_const_logic_1 = ap_CS_fsm_state7)) then 
             data_blk_n <= data_empty_n;
         else 
             data_blk_n <= ap_const_logic_1;
@@ -718,9 +1121,9 @@ begin
     end process;
 
 
-    data_read_assign_proc : process(data_empty_n, ap_CS_fsm_state5)
+    data_read_assign_proc : process(data_empty_n, ap_CS_fsm_state7)
     begin
-        if (((data_empty_n = ap_const_logic_1) and (ap_const_logic_1 = ap_CS_fsm_state5))) then 
+        if (((data_empty_n = ap_const_logic_1) and (ap_const_logic_1 = ap_CS_fsm_state7))) then 
             data_read <= ap_const_logic_1;
         else 
             data_read <= ap_const_logic_0;
@@ -729,44 +1132,114 @@ begin
 
     done <= last_written;
 
-    gmem_0_AWVALID_assign_proc : process(ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWVALID, ap_CS_fsm_state6)
+    gmem_0_AWADDR_assign_proc : process(ap_CS_fsm_state7, ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWADDR, grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWADDR, grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWADDR, ap_CS_fsm_state10, ap_CS_fsm_state6, ap_CS_fsm_state8, ap_CS_fsm_state9)
     begin
-        if (((ap_const_logic_1 = ap_CS_fsm_state5) or (ap_const_logic_1 = ap_CS_fsm_state6))) then 
-            gmem_0_AWVALID <= grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_AWVALID;
+        if (((ap_const_logic_1 = ap_CS_fsm_state9) or (ap_const_logic_1 = ap_CS_fsm_state10))) then 
+            gmem_0_AWADDR <= grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWADDR;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state7) or (ap_const_logic_1 = ap_CS_fsm_state8))) then 
+            gmem_0_AWADDR <= grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWADDR;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state6) or (ap_const_logic_1 = ap_CS_fsm_state5))) then 
+            gmem_0_AWADDR <= grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWADDR;
+        else 
+            gmem_0_AWADDR <= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+        end if; 
+    end process;
+
+
+    gmem_0_AWLEN_assign_proc : process(ap_CS_fsm_state7, ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLEN, grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLEN, grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLEN, ap_CS_fsm_state10, ap_CS_fsm_state6, ap_CS_fsm_state8, ap_CS_fsm_state9)
+    begin
+        if (((ap_const_logic_1 = ap_CS_fsm_state9) or (ap_const_logic_1 = ap_CS_fsm_state10))) then 
+            gmem_0_AWLEN <= grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWLEN;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state7) or (ap_const_logic_1 = ap_CS_fsm_state8))) then 
+            gmem_0_AWLEN <= grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWLEN;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state6) or (ap_const_logic_1 = ap_CS_fsm_state5))) then 
+            gmem_0_AWLEN <= grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWLEN;
+        else 
+            gmem_0_AWLEN <= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+        end if; 
+    end process;
+
+
+    gmem_0_AWVALID_assign_proc : process(ap_CS_fsm_state7, ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWVALID, grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWVALID, grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWVALID, ap_CS_fsm_state10, ap_CS_fsm_state6, ap_CS_fsm_state8, ap_CS_fsm_state9)
+    begin
+        if (((ap_const_logic_1 = ap_CS_fsm_state9) or (ap_const_logic_1 = ap_CS_fsm_state10))) then 
+            gmem_0_AWVALID <= grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_AWVALID;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state7) or (ap_const_logic_1 = ap_CS_fsm_state8))) then 
+            gmem_0_AWVALID <= grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_AWVALID;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state6) or (ap_const_logic_1 = ap_CS_fsm_state5))) then 
+            gmem_0_AWVALID <= grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_AWVALID;
         else 
             gmem_0_AWVALID <= ap_const_logic_0;
         end if; 
     end process;
 
 
-    gmem_0_BREADY_assign_proc : process(ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_BREADY, ap_CS_fsm_state6)
+    gmem_0_BREADY_assign_proc : process(ap_CS_fsm_state7, ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_BREADY, grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_BREADY, grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_BREADY, ap_CS_fsm_state10, ap_CS_fsm_state6, ap_CS_fsm_state8, ap_CS_fsm_state9)
     begin
-        if (((ap_const_logic_1 = ap_CS_fsm_state5) or (ap_const_logic_1 = ap_CS_fsm_state6))) then 
-            gmem_0_BREADY <= grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_BREADY;
+        if (((ap_const_logic_1 = ap_CS_fsm_state9) or (ap_const_logic_1 = ap_CS_fsm_state10))) then 
+            gmem_0_BREADY <= grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_BREADY;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state7) or (ap_const_logic_1 = ap_CS_fsm_state8))) then 
+            gmem_0_BREADY <= grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_BREADY;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state6) or (ap_const_logic_1 = ap_CS_fsm_state5))) then 
+            gmem_0_BREADY <= grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_BREADY;
         else 
             gmem_0_BREADY <= ap_const_logic_0;
         end if; 
     end process;
 
 
-    gmem_0_WVALID_assign_proc : process(ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WVALID, ap_CS_fsm_state6)
+    gmem_0_WDATA_assign_proc : process(ap_CS_fsm_state7, ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WDATA, grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WDATA, grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WDATA, ap_CS_fsm_state10, ap_CS_fsm_state6, ap_CS_fsm_state8, ap_CS_fsm_state9)
     begin
-        if (((ap_const_logic_1 = ap_CS_fsm_state5) or (ap_const_logic_1 = ap_CS_fsm_state6))) then 
-            gmem_0_WVALID <= grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_m_axi_gmem_0_WVALID;
+        if (((ap_const_logic_1 = ap_CS_fsm_state9) or (ap_const_logic_1 = ap_CS_fsm_state10))) then 
+            gmem_0_WDATA <= grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WDATA;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state7) or (ap_const_logic_1 = ap_CS_fsm_state8))) then 
+            gmem_0_WDATA <= grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WDATA;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state6) or (ap_const_logic_1 = ap_CS_fsm_state5))) then 
+            gmem_0_WDATA <= grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WDATA;
+        else 
+            gmem_0_WDATA <= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+        end if; 
+    end process;
+
+
+    gmem_0_WSTRB_assign_proc : process(ap_CS_fsm_state7, ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WSTRB, grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WSTRB, grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WSTRB, ap_CS_fsm_state10, ap_CS_fsm_state6, ap_CS_fsm_state8, ap_CS_fsm_state9)
+    begin
+        if (((ap_const_logic_1 = ap_CS_fsm_state9) or (ap_const_logic_1 = ap_CS_fsm_state10))) then 
+            gmem_0_WSTRB <= grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WSTRB;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state7) or (ap_const_logic_1 = ap_CS_fsm_state8))) then 
+            gmem_0_WSTRB <= grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WSTRB;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state6) or (ap_const_logic_1 = ap_CS_fsm_state5))) then 
+            gmem_0_WSTRB <= grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WSTRB;
+        else 
+            gmem_0_WSTRB <= "XXXXXXXX";
+        end if; 
+    end process;
+
+
+    gmem_0_WVALID_assign_proc : process(ap_CS_fsm_state7, ap_CS_fsm_state5, grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WVALID, grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WVALID, grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WVALID, ap_CS_fsm_state10, ap_CS_fsm_state6, ap_CS_fsm_state8, ap_CS_fsm_state9)
+    begin
+        if (((ap_const_logic_1 = ap_CS_fsm_state9) or (ap_const_logic_1 = ap_CS_fsm_state10))) then 
+            gmem_0_WVALID <= grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_m_axi_gmem_0_WVALID;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state7) or (ap_const_logic_1 = ap_CS_fsm_state8))) then 
+            gmem_0_WVALID <= grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_m_axi_gmem_0_WVALID;
+        elsif (((ap_const_logic_1 = ap_CS_fsm_state6) or (ap_const_logic_1 = ap_CS_fsm_state5))) then 
+            gmem_0_WVALID <= grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_m_axi_gmem_0_WVALID;
         else 
             gmem_0_WVALID <= ap_const_logic_0;
         end if; 
     end process;
 
-    grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start <= grp_RAM_INTERFACE_Pipeline_ROWS_COLS_fu_107_ap_start_reg;
-    grp_fu_211_p0 <= ap_const_lv12_FA(8 - 1 downto 0);
-    grp_fu_211_p1 <= grp_fu_211_p10(4 - 1 downto 0);
-    grp_fu_211_p10 <= std_logic_vector(IEEE.numeric_std.resize(unsigned(chunk_y),12));
-    grp_fu_211_p2 <= grp_fu_211_p20(7 - 1 downto 0);
-    grp_fu_211_p20 <= std_logic_vector(IEEE.numeric_std.resize(unsigned(add_ln26_fu_151_p2),12));
-    icmp_ln41_fu_161_p2 <= "1" when (chunk_x = ap_const_lv4_9) else "0";
-    icmp_ln43_fu_183_p2 <= "1" when (chunk_y = ap_const_lv4_9) else "0";
-    tmp_fu_139_p3 <= (chunk_x & ap_const_lv2_0);
-    zext_ln26_1_fu_135_p1 <= std_logic_vector(IEEE.numeric_std.resize(unsigned(chunk_x),7));
-    zext_ln26_3_fu_147_p1 <= std_logic_vector(IEEE.numeric_std.resize(unsigned(tmp_fu_139_p3),7));
+    grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start <= grp_RAM_INTERFACE_Pipeline_BEATS_fu_118_ap_start_reg;
+    grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start <= grp_RAM_INTERFACE_Pipeline_REQUESTS_fu_109_ap_start_reg;
+    grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start <= grp_RAM_INTERFACE_Pipeline_RESPONSES_fu_126_ap_start_reg;
+    grp_fu_225_p0 <= ap_const_lv12_FA(8 - 1 downto 0);
+    grp_fu_225_p1 <= grp_fu_225_p10(4 - 1 downto 0);
+    grp_fu_225_p10 <= std_logic_vector(IEEE.numeric_std.resize(unsigned(chunk_y),12));
+    grp_fu_225_p2 <= grp_fu_225_p20(7 - 1 downto 0);
+    grp_fu_225_p20 <= std_logic_vector(IEEE.numeric_std.resize(unsigned(add_ln39_fu_165_p2),12));
+    icmp_ln64_fu_175_p2 <= "1" when (chunk_x = ap_const_lv4_9) else "0";
+    icmp_ln66_fu_197_p2 <= "1" when (chunk_y = ap_const_lv4_9) else "0";
+    tmp_fu_153_p3 <= (chunk_x & ap_const_lv2_0);
+    zext_ln39_1_fu_149_p1 <= std_logic_vector(IEEE.numeric_std.resize(unsigned(chunk_x),7));
+    zext_ln39_3_fu_161_p1 <= std_logic_vector(IEEE.numeric_std.resize(unsigned(tmp_fu_153_p3),7));
 end behav;
