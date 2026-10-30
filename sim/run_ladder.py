@@ -51,7 +51,7 @@ def sh(cmd):
 def run_step(st, src):
     d = os.path.join(HERE, 'build_ladder', st['id'])
     shutil.rmtree(d, ignore_errors=True); os.makedirs(d)
-    for f in files_of(src) + CFG['testbench']:
+    for f in files_of(src):
         shutil.copy(f, d)
     for f in ['run_perf.py', 'run_rtl.py']: shutil.copy(f, d)
     os.chdir(d); sys.path.insert(0, d)
@@ -61,7 +61,8 @@ def run_step(st, src):
     open('a_b.hex', 'w').write(''.join('%016X\n' % v for v in A + B))
     sh(['ghdl', '-i'] + OPT + sorted(glob.glob('*.vhd')))
     sh(['ghdl', '-m'] + OPT + ['tb_chain_rtl'])
-    res = {'id': st['id'], 'name': st['name'], 'git': st['git'], 'sources': src}
+    res = {'id': st['id'], 'name': st['name'], 'git': st['git'], 'sources': src,
+           'cpu_mode': st.get('cpu_mode', 'single')}
     p = run_rtl.run('hello', LN, 0);        res['nominal'] = p
     q = run_rtl.run('random', LN, 0);       res['random'] = q
     r = run_rtl.run('hello', LN, 0, 2);     res['restart'] = r
@@ -79,22 +80,43 @@ def run_step(st, src):
     os.chdir(HERE); sys.path.remove(d)
     return res
 
+def cpu_us(mode):
+    """Estimated CPU time (us) for moving the data, per cpu_mode (see ladder.json)."""
+    e = CFG['cpu_estimates']
+    if mode == 'single':
+        load = 10000 * e['t_bram_write_ns'] / 1000.0          # 2 x 2500 values, 2 x 32-bit writes each
+        back = 2500 * e['t_plddr_read_ns'] / 1000.0
+    else:
+        load = (2 * 20000 / 64) * e['t_cache_line_ns'] / 1000.0                       # flush A and B
+        back = (20000 / 64) * e['t_cache_line_ns'] / 1000.0 + 2500 * e['t_ddr_read_ns'] / 1000.0  # invalidate + read C
+    return load, back
+
 def table(results):
     base = results[0]
-    lines = ['| Step | Change | Build from | PL cycles (L=%d) | vs previous | vs baseline | PL cycles (L=%d) | vs previous | Tests |' % (LN, LS),
-             '|---|---|---|---:|---:|---:|---:|---:|---|']
+    lines = ['| Step | Change | Build from | PL cycles (L=%d) | PL vs previous | PL cycles (L=%d) | Tests |' % (LN, LS),
+             '|---|---|---|---:|---:|---:|---|']
     prev = None
     for r in results:
-        if prev is None:
-            dn = ds = '—'
-        else:
-            dn = '%+d (%.2f×)' % (r['cycles_nominal'] - prev['cycles_nominal'], prev['cycles_nominal'] / r['cycles_nominal'])
-            ds = '%+d (%.2f×)' % (r['cycles_stress'] - prev['cycles_stress'], prev['cycles_stress'] / r['cycles_stress'])
-        vb = '%.2f×' % (base['cycles_nominal'] / r['cycles_nominal'])
-        lines.append('| %s | %s | %s | %d (%.3f ms) | %s | %s | %d | %s | %s |' % (
-            r['id'], r['name'], r['git'], r['cycles_nominal'], r['cycles_nominal'] / 1e5, dn, vb,
-            r['cycles_stress'], ds, 'PASS' if r['pass'] else 'FAIL'))
+        dn = '—' if prev is None else '%+d (%.2f×)' % (r['cycles_nominal'] - prev['cycles_nominal'],
+                                                       prev['cycles_nominal'] / r['cycles_nominal'])
+        lines.append('| %s | %s | %s | %d (%.3f ms) | %s | %d | %s |' % (
+            r['id'], r['name'], r['git'], r['cycles_nominal'], r['cycles_nominal'] / 1e5, dn,
+            r['cycles_stress'], 'PASS' if r['pass'] else 'FAIL'))
         prev = r
+    est = '' if CFG['cpu_estimates'].get('measured') else ' — CPU parts are ESTIMATES until measured on the board'
+    lines += ['', '**Estimated end-to-end time** (CPU load + PL at L=%d + CPU read-back)%s' % (LN, est), '',
+              '| Step | CPU mode | CPU load (µs) | PL (µs) | CPU read-back (µs) | End-to-end (µs) | vs previous | vs baseline |',
+              '|---|---|---:|---:|---:|---:|---:|---:|']
+    prev = base_t = None
+    for r in results:
+        load, back = cpu_us(r.get('cpu_mode', 'single'))
+        pl = r['cycles_nominal'] / 100.0
+        t = load + pl + back
+        if base_t is None: base_t = t
+        vp = '—' if prev is None else '%.2f×' % (prev / t)
+        lines.append('| %s | %s | %.0f | %.0f | %.0f | %.0f | %s | %.2f× |' % (
+            r['id'], r.get('cpu_mode', 'single'), load, pl, back, t, vp, base_t / t))
+        prev = t
     return '\n'.join(lines)
 
 if __name__ == '__main__':
@@ -121,8 +143,10 @@ if __name__ == '__main__':
         print('%-20s %s  L=%d: %d cycles   L=%d: %d cycles' % (st['id'], 'PASS' if r['pass'] else 'FAIL',
               LN, r['cycles_nominal'], LS, r['cycles_stress']), flush=True)
     results = [old[i] for i in ids if i in old]
+    for st, _ in steps:                       # keep cpu_mode in sync with ladder.json
+        if st['id'] in old: old[st['id']]['cpu_mode'] = st.get('cpu_mode', 'single')
     json.dump(results, open('ladder_results.json', 'w'), indent=1)
     t = table(results)
     open('ladder.md', 'w').write('# Improvement ladder (PL run time, simulated)\n\n'
-        'Cycles from start to done at 100 MHz, real RAM_INTERFACE RTL, AXI write-response latency L.\n\n' + t + '\n')
+        'PL: cycles from start to done at 100 MHz, real RTL of every block, AXI memory latency L.\n\n' + t + '\n')
     print('\n' + t)

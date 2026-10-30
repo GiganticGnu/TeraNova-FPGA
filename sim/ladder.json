@@ -1,11 +1,7 @@
 {
-  "_comment": "Improvement ladder. Steps are applied in order and are CUMULATIVE: each step inherits the sources of the previous one and overrides only the slots it names. One step = one hardware change = one build on the board (git ref).",
+  "_comment": "Improvement ladder. Steps are applied in order and are CUMULATIVE: each step inherits the sources of the previous one and overrides only the slots it names (including the testbench). One step = one hardware change = one build on the board (git ref). 'cpu_mode' selects how the CPU moves the data in that step: 'single' = 10000 single writes into the BRAMs + 2500 single reads from the PL DDR4; 'burst' = the PL fetches A/B and writes C in PS DDR itself, the CPU only flushes/invalidates its cache and reads C from its own memory.",
   "nominal_latency": 20,
   "stress_latency": 100,
-  "testbench": [
-    "axi_mem_model.vhd",
-    "tb_chain_rtl.vhd"
-  ],
   "steps": [
     {
       "id": "0_baseline",
@@ -25,8 +21,13 @@
         "partitioner": [
           "matrix_partitioner_B.vhd"
         ],
-        "ram_interface": "hls_rtl"
-      }
+        "ram_interface": "hls_rtl",
+        "testbench": [
+          "axi_mem_model.vhd",
+          "tb_chain_rtl.vhd"
+        ]
+      },
+      "cpu_mode": "single"
     },
     {
       "id": "1_partitioner_v5b",
@@ -36,7 +37,8 @@
         "partitioner": [
           "variants/matrix_partitioner_B_v5b.vhd"
         ]
-      }
+      },
+      "cpu_mode": "single"
     },
     {
       "id": "2_writer_fix",
@@ -44,7 +46,8 @@
       "git": "branch writer-fix",
       "sources": {
         "ram_interface": "steps/2_writer_fix/hls_rtl"
-      }
+      },
+      "cpu_mode": "single"
     },
     {
       "id": "3_partitioner_v6",
@@ -54,7 +57,32 @@
         "partitioner": [
           "variants/matrix_partitioner_B_v6.vhd"
         ]
+      },
+      "cpu_mode": "single"
+    },
+    {
+      "id": "4_burst_datapath",
+      "name": "Burst data path: PL reads A/B and writes C in PS DDR",
+      "git": "branch burst-datapath",
+      "cpu_mode": "burst",
+      "sources": {
+        "partitioner": [
+          "variants/matrix_partitioner_B_v7.vhd"
+        ],
+        "testbench": [
+          "axi_mem_model.vhd",
+          "axi_rd_mem_model.vhd",
+          "tb_chain_axi.vhd"
+        ]
       }
     }
-  ]
+  ],
+  "cpu_estimates": {
+    "_source": "ESTIMATES until measured on the board. single-mode values: midpoints of the analysis report (load 1-2 ms, read-back 0.5-1 ms). Replace t_bram_write_ns and t_plddr_read_ns with the latency probes of Badr's Baseline 1 run (CSV,probe,...). burst-mode values: rough A53 figures (cache maintenance per 64-byte line, cached DDR read per value); to be measured with the rung-4 application.",
+    "t_bram_write_ns": 150,
+    "t_plddr_read_ns": 300,
+    "t_cache_line_ns": 50,
+    "t_ddr_read_ns": 20,
+    "measured": false
+  }
 }
