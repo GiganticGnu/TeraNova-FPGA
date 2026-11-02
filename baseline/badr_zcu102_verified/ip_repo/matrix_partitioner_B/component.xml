@@ -1,0 +1,396 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:component xmlns:ns0="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:ns2="http://www.xilinx.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ns0:vendor>xilinx.com</ns0:vendor>
+  <ns0:library>user</ns0:library>
+  <ns0:name>matrix_partitioner_B</ns0:name>
+  <ns0:version>1.0</ns0:version>
+  <ns0:busInterfaces>
+    <ns0:busInterface>
+      <ns0:name>rst</ns0:name>
+      <ns0:busType ns0:vendor="xilinx.com" ns0:library="signal" ns0:name="reset" ns0:version="1.0" />
+      <ns0:abstractionType ns0:vendor="xilinx.com" ns0:library="signal" ns0:name="reset_rtl" ns0:version="1.0" />
+      <ns0:slave />
+      <ns0:portMaps>
+        <ns0:portMap>
+          <ns0:logicalPort>
+            <ns0:name>RST</ns0:name>
+          </ns0:logicalPort>
+          <ns0:physicalPort>
+            <ns0:name>rst</ns0:name>
+          </ns0:physicalPort>
+        </ns0:portMap>
+      </ns0:portMaps>
+    </ns0:busInterface>
+    <ns0:busInterface>
+      <ns0:name>clk</ns0:name>
+      <ns0:busType ns0:vendor="xilinx.com" ns0:library="signal" ns0:name="clock" ns0:version="1.0" />
+      <ns0:abstractionType ns0:vendor="xilinx.com" ns0:library="signal" ns0:name="clock_rtl" ns0:version="1.0" />
+      <ns0:slave />
+      <ns0:portMaps>
+        <ns0:portMap>
+          <ns0:logicalPort>
+            <ns0:name>CLK</ns0:name>
+          </ns0:logicalPort>
+          <ns0:physicalPort>
+            <ns0:name>clk</ns0:name>
+          </ns0:physicalPort>
+        </ns0:portMap>
+      </ns0:portMaps>
+      <ns0:parameters>
+        <ns0:parameter>
+          <ns0:name>ASSOCIATED_RESET</ns0:name>
+          <ns0:value ns0:id="BUSIFPARAM_VALUE.CLK.ASSOCIATED_RESET">rst</ns0:value>
+        </ns0:parameter>
+      </ns0:parameters>
+    </ns0:busInterface>
+  </ns0:busInterfaces>
+  <ns0:model>
+    <ns0:views>
+      <ns0:view>
+        <ns0:name>xilinx_anylanguagesynthesis</ns0:name>
+        <ns0:displayName>Synthesis</ns0:displayName>
+        <ns0:envIdentifier>:vivado.xilinx.com:synthesis</ns0:envIdentifier>
+        <ns0:language>VHDL</ns0:language>
+        <ns0:modelName>matrix_partitioner_B</ns0:modelName>
+        <ns0:fileSetRef>
+          <ns0:localName>xilinx_anylanguagesynthesis_view_fileset</ns0:localName>
+        </ns0:fileSetRef>
+        <ns0:parameters>
+          <ns0:parameter>
+            <ns0:name>viewChecksum</ns0:name>
+            <ns0:value>bcc907ef</ns0:value>
+          </ns0:parameter>
+        </ns0:parameters>
+      </ns0:view>
+      <ns0:view>
+        <ns0:name>xilinx_anylanguagebehavioralsimulation</ns0:name>
+        <ns0:displayName>Simulation</ns0:displayName>
+        <ns0:envIdentifier>:vivado.xilinx.com:simulation</ns0:envIdentifier>
+        <ns0:language>VHDL</ns0:language>
+        <ns0:modelName>matrix_partitioner_B</ns0:modelName>
+        <ns0:fileSetRef>
+          <ns0:localName>xilinx_anylanguagebehavioralsimulation_view_fileset</ns0:localName>
+        </ns0:fileSetRef>
+        <ns0:parameters>
+          <ns0:parameter>
+            <ns0:name>viewChecksum</ns0:name>
+            <ns0:value>bcc907ef</ns0:value>
+          </ns0:parameter>
+        </ns0:parameters>
+      </ns0:view>
+      <ns0:view>
+        <ns0:name>xilinx_xpgui</ns0:name>
+        <ns0:displayName>UI Layout</ns0:displayName>
+        <ns0:envIdentifier>:vivado.xilinx.com:xgui.ui</ns0:envIdentifier>
+        <ns0:fileSetRef>
+          <ns0:localName>xilinx_xpgui_view_fileset</ns0:localName>
+        </ns0:fileSetRef>
+        <ns0:parameters>
+          <ns0:parameter>
+            <ns0:name>viewChecksum</ns0:name>
+            <ns0:value>0dbb72fa</ns0:value>
+          </ns0:parameter>
+        </ns0:parameters>
+      </ns0:view>
+    </ns0:views>
+    <ns0:ports>
+      <ns0:port>
+        <ns0:name>clk</ns0:name>
+        <ns0:wire>
+          <ns0:direction>in</ns0:direction>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>rst</ns0:name>
+        <ns0:wire>
+          <ns0:direction>in</ns0:direction>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>start</ns0:name>
+        <ns0:wire>
+          <ns0:direction>in</ns0:direction>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>bram_addr_A</ns0:name>
+        <ns0:wire>
+          <ns0:direction>out</ns0:direction>
+          <ns0:vector>
+            <ns0:left ns0:format="long">11</ns0:left>
+            <ns0:right ns0:format="long">0</ns0:right>
+          </ns0:vector>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic_vector</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>bram_addr_B</ns0:name>
+        <ns0:wire>
+          <ns0:direction>out</ns0:direction>
+          <ns0:vector>
+            <ns0:left ns0:format="long">11</ns0:left>
+            <ns0:right ns0:format="long">0</ns0:right>
+          </ns0:vector>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic_vector</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>data_in_highA</ns0:name>
+        <ns0:wire>
+          <ns0:direction>in</ns0:direction>
+          <ns0:vector>
+            <ns0:left ns0:format="long">31</ns0:left>
+            <ns0:right ns0:format="long">0</ns0:right>
+          </ns0:vector>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic_vector</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>data_in_lowA</ns0:name>
+        <ns0:wire>
+          <ns0:direction>in</ns0:direction>
+          <ns0:vector>
+            <ns0:left ns0:format="long">31</ns0:left>
+            <ns0:right ns0:format="long">0</ns0:right>
+          </ns0:vector>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic_vector</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>data_in_highB</ns0:name>
+        <ns0:wire>
+          <ns0:direction>in</ns0:direction>
+          <ns0:vector>
+            <ns0:left ns0:format="long">31</ns0:left>
+            <ns0:right ns0:format="long">0</ns0:right>
+          </ns0:vector>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic_vector</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>data_in_lowB</ns0:name>
+        <ns0:wire>
+          <ns0:direction>in</ns0:direction>
+          <ns0:vector>
+            <ns0:left ns0:format="long">31</ns0:left>
+            <ns0:right ns0:format="long">0</ns0:right>
+          </ns0:vector>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic_vector</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>data_out_A</ns0:name>
+        <ns0:wire>
+          <ns0:direction>out</ns0:direction>
+          <ns0:vector>
+            <ns0:left ns0:format="long" ns0:resolve="dependent" ns0:dependency="(((spirit:decode(id('MODELPARAM_VALUE.B')) * spirit:decode(id('MODELPARAM_VALUE.B'))) * spirit:decode(id('MODELPARAM_VALUE.WORD_WIDTH'))) - 1)">1599</ns0:left>
+            <ns0:right ns0:format="long">0</ns0:right>
+          </ns0:vector>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic_vector</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>data_out_B</ns0:name>
+        <ns0:wire>
+          <ns0:direction>out</ns0:direction>
+          <ns0:vector>
+            <ns0:left ns0:format="long" ns0:resolve="dependent" ns0:dependency="(((spirit:decode(id('MODELPARAM_VALUE.B')) * spirit:decode(id('MODELPARAM_VALUE.B'))) * spirit:decode(id('MODELPARAM_VALUE.WORD_WIDTH'))) - 1)">1599</ns0:left>
+            <ns0:right ns0:format="long">0</ns0:right>
+          </ns0:vector>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic_vector</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>valid</ns0:name>
+        <ns0:wire>
+          <ns0:direction>out</ns0:direction>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+      <ns0:port>
+        <ns0:name>ready</ns0:name>
+        <ns0:wire>
+          <ns0:direction>in</ns0:direction>
+          <ns0:wireTypeDefs>
+            <ns0:wireTypeDef>
+              <ns0:typeName>std_logic</ns0:typeName>
+              <ns0:viewNameRef>xilinx_anylanguagesynthesis</ns0:viewNameRef>
+              <ns0:viewNameRef>xilinx_anylanguagebehavioralsimulation</ns0:viewNameRef>
+            </ns0:wireTypeDef>
+          </ns0:wireTypeDefs>
+        </ns0:wire>
+      </ns0:port>
+    </ns0:ports>
+    <ns0:modelParameters>
+      <ns0:modelParameter xsi:type="spirit:nameValueTypeType" ns0:dataType="integer">
+        <ns0:name>N</ns0:name>
+        <ns0:displayName>N</ns0:displayName>
+        <ns0:value ns0:format="long" ns0:resolve="generated" ns0:id="MODELPARAM_VALUE.N">50</ns0:value>
+      </ns0:modelParameter>
+      <ns0:modelParameter ns0:dataType="integer">
+        <ns0:name>B</ns0:name>
+        <ns0:displayName>B</ns0:displayName>
+        <ns0:value ns0:format="long" ns0:resolve="generated" ns0:id="MODELPARAM_VALUE.B">5</ns0:value>
+      </ns0:modelParameter>
+      <ns0:modelParameter ns0:dataType="integer">
+        <ns0:name>WORD_WIDTH</ns0:name>
+        <ns0:displayName>Word Width</ns0:displayName>
+        <ns0:value ns0:format="long" ns0:resolve="generated" ns0:id="MODELPARAM_VALUE.WORD_WIDTH">64</ns0:value>
+      </ns0:modelParameter>
+    </ns0:modelParameters>
+  </ns0:model>
+  <ns0:fileSets>
+    <ns0:fileSet>
+      <ns0:name>xilinx_anylanguagesynthesis_view_fileset</ns0:name>
+      <ns0:file>
+        <ns0:name>matrix_partitioner_B.vhd</ns0:name>
+        <ns0:fileType>vhdlSource</ns0:fileType>
+        <ns0:userFileType>CHECKSUM_bcc907ef</ns0:userFileType>
+      </ns0:file>
+    </ns0:fileSet>
+    <ns0:fileSet>
+      <ns0:name>xilinx_anylanguagebehavioralsimulation_view_fileset</ns0:name>
+      <ns0:file>
+        <ns0:name>matrix_partitioner_B.vhd</ns0:name>
+        <ns0:fileType>vhdlSource</ns0:fileType>
+      </ns0:file>
+    </ns0:fileSet>
+    <ns0:fileSet>
+      <ns0:name>xilinx_xpgui_view_fileset</ns0:name>
+      <ns0:file>
+        <ns0:name>xgui/matrix_partitioner_B_v1_0.tcl</ns0:name>
+        <ns0:fileType>tclSource</ns0:fileType>
+        <ns0:userFileType>CHECKSUM_0dbb72fa</ns0:userFileType>
+        <ns0:userFileType>XGUI_VERSION_2</ns0:userFileType>
+      </ns0:file>
+    </ns0:fileSet>
+  </ns0:fileSets>
+  <ns0:description>matrix_partitioner_B_v1_0</ns0:description>
+  <ns0:parameters>
+    <ns0:parameter>
+      <ns0:name>N</ns0:name>
+      <ns0:displayName>N</ns0:displayName>
+      <ns0:value ns0:format="long" ns0:resolve="user" ns0:id="PARAM_VALUE.N">50</ns0:value>
+    </ns0:parameter>
+    <ns0:parameter>
+      <ns0:name>B</ns0:name>
+      <ns0:displayName>B</ns0:displayName>
+      <ns0:value ns0:format="long" ns0:resolve="user" ns0:id="PARAM_VALUE.B">5</ns0:value>
+    </ns0:parameter>
+    <ns0:parameter>
+      <ns0:name>WORD_WIDTH</ns0:name>
+      <ns0:displayName>Word Width</ns0:displayName>
+      <ns0:value ns0:format="long" ns0:resolve="user" ns0:id="PARAM_VALUE.WORD_WIDTH">64</ns0:value>
+    </ns0:parameter>
+    <ns0:parameter>
+      <ns0:name>Component_Name</ns0:name>
+      <ns0:value ns0:resolve="user" ns0:id="PARAM_VALUE.Component_Name" ns0:order="1">matrix_partitioner_B_v1_0</ns0:value>
+    </ns0:parameter>
+  </ns0:parameters>
+  <ns0:vendorExtensions>
+    <ns2:coreExtensions>
+      <ns2:supportedFamilies>
+        <ns2:family ns2:lifeCycle="Production">zynq</ns2:family>
+        <ns2:family ns2:lifeCycle="Production">qzynq</ns2:family>
+        <ns2:family ns2:lifeCycle="Production">azynq</ns2:family>
+        <ns2:family ns2:lifeCycle="Production">zynquplus</ns2:family>
+      </ns2:supportedFamilies>
+      <ns2:taxonomies>
+        <ns2:taxonomy>/UserIP</ns2:taxonomy>
+      </ns2:taxonomies>
+      <ns2:displayName>matrix_partitioner_B_v1_0</ns2:displayName>
+      <ns2:definitionSource>package_project</ns2:definitionSource>
+      <ns2:xpmLibraries>
+        <ns2:xpmLibrary>XPM_MEMORY</ns2:xpmLibrary>
+      </ns2:xpmLibraries>
+      <ns2:coreRevision>3</ns2:coreRevision>
+      <ns2:coreCreationDateTime>2026-10-07T13:42:26Z</ns2:coreCreationDateTime>
+      <ns2:tags>
+        <ns2:tag ns2:name="nopcore" />
+      </ns2:tags>
+    </ns2:coreExtensions>
+    <ns2:packagingInfo>
+      <ns2:xilinxVersion>2025.1.1</ns2:xilinxVersion>
+      <ns2:checksum ns2:scope="busInterfaces" ns2:value="25031715" />
+      <ns2:checksum ns2:scope="fileGroups" ns2:value="94fe855f" />
+      <ns2:checksum ns2:scope="ports" ns2:value="a6fa5384" />
+      <ns2:checksum ns2:scope="hdlParameters" ns2:value="696995b7" />
+      <ns2:checksum ns2:scope="parameters" ns2:value="f346cb81" />
+    </ns2:packagingInfo>
+  </ns0:vendorExtensions>
+</ns0:component>
