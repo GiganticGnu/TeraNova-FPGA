@@ -20,6 +20,17 @@ void bram_write_64(UINTPTR baseAddress, size_t index, u64 data) {
     XBram_Out32(bram_ptr_second, data_union.words[0]); // Write lower 32 bits
 }
 
+void bram_write_matrix(UINTPTR baseAddress, uint64_t *matrix, size_t size)
+{
+    for (size_t i = 0; i < size; i++) {
+        XBram_Out32(baseAddress + i * sizeof(u32), (u32)(matrix[i] >> 32));
+    }
+
+    for (size_t i = 0; i < size; i++) {
+        XBram_Out32(baseAddress + BRAM_DEPTH + i * sizeof(u32), (u32)matrix[i]);
+    }
+}
+
 u64 bram_read_64(UINTPTR baseAddress, size_t index) {
     size_t offset = index * sizeof(u32);
     UINTPTR bram_ptr_first = baseAddress + offset;

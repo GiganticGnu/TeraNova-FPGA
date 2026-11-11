@@ -19,6 +19,10 @@
  */
 void bram_write_64(UINTPTR baseAddress, size_t index, u64 data);
 
+
+void bram_write_matrix(UINTPTR baseAddress, uint64_t *matrix, size_t size);
+
+
 /**
  * @brief Reads a 64-bit value from the BRAM at the specified base address.
  *
