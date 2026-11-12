@@ -1,0 +1,91 @@
+
+=== rung 3 (partitioner v6 + writer fix) on the board model ===
+DDR input of RAM_INTERFACE = 0x0000000400000000, BRAM read latency = 1, DDR4 write latency = 40 cycles, CPU loads BRAMs = 1, C filled with 0xDEADBEEFDEADBEEF before each run
+
+--- run 1 ---
+  Data check per stage (first stage that is wrong = where it goes wrong):
+    1 BRAM -> partitioner (A,B elements) : 0 wrong
+    2 partitioner blocks out  (1000/1000) : 0 wrong elements
+    3 multiplier products     (1000/1000) : 0 wrong elements
+    4 accumulator C blocks    (100/100)  : 0 wrong elements
+    5 AXI write rows (address)(500/500)  : 0 wrong
+    6 AXI write data          (2500/2500): 0 wrong
+    7 AXI write responses     (504 bursts): 0 not OKAY (DECERR = no slave there)
+    8 C read back by the CPU             : 2500 correct, 0 never written (still 0xDEADBEEFDEADBEEF), 0 zero, 0 other wrong
+  Interrupts this run: 1
+
+  Stage timing (CPU parts = model, PL parts = cycle-accurate RTL):
+  A  CPU writes A,B into BRAMs (10000 x 32 bit)   1500.00 us   150000 cyc  [model: 150 ns/write]
+  B  start: GPIO write -> toggle2pulse -> start      0.18 us       18 cyc  [GPIO model + 2 cyc]
+  C  PL: on-chip copy of A,B (LOAD, 2500 el.)       25.07 us     2507 cyc  
+  D  PL: multiply + accumulate (1000 pairs)         94.16 us     9416 cyc  
+  E  PL: last pair -> last product                   0.05 us        5 cyc  
+  F  PL: last product -> last C block to writer      0.40 us       40 cyc  
+  G  PL: last C block -> done (last write resp.)     0.84 us       84 cyc  
+     = PL total (start pulse -> done)              120.52 us    12052 cyc  
+     write-back span (first AW -> done)             94.75 us     9475 cyc  (overlaps D)
+  H  done -> interrupt handler                       1.00 us      100 cyc  [model]
+  I  CPU reads C back (2500 x 64 bit)              750.00 us    75000 cyc  [model: 300 ns/read]
+     = app 'compute' (GPIO write -> ISR)           121.70 us    12170 cyc  
+     = app end-to-end (load+compute+read-back)    2371.70 us   237170 cyc  
+  Inside the PL run (12056 cycles):
+    multiplier busy (not ready)         : 8422 cycles
+    write-back with bursts in flight    : 7005 cycles
+    accumulator waiting for the writer  : 3853 cycles
+CSV,stage,1,A_cpu_bram_load,315,1500315
+CSV,stage,1,B_start,1500335,1500515
+CSV,stage,1,C_onchip_copy,1500515,1525585
+CSV,stage,1,D_mult_acc,1525585,1619745
+CSV,stage,1,E_last_product,1619745,1619795
+CSV,stage,1,F_last_block,1619795,1620195
+CSV,stage,1,G_last_write_done,1620195,1621035
+CSV,stage,1,W_writeback_span,1526285,1621035
+CSV,stage,1,H_irq,1621035,1622035
+CSV,stage,1,I_cpu_readback,1622035,2372035
+CSV,util,1,12056,8422,7005,3853
+CSV,check,1,0,0,0,0,0,0,0,2500,0,0,0,1
+
+--- run 2 ---
+  Data check per stage (first stage that is wrong = where it goes wrong):
+    1 BRAM -> partitioner (A,B elements) : 0 wrong
+    2 partitioner blocks out  (1000/1000) : 0 wrong elements
+    3 multiplier products     (1000/1000) : 0 wrong elements
+    4 accumulator C blocks    (100/100)  : 0 wrong elements
+    5 AXI write rows (address)(500/500)  : 0 wrong
+    6 AXI write data          (2500/2500): 0 wrong
+    7 AXI write responses     (504 bursts): 0 not OKAY (DECERR = no slave there)
+    8 C read back by the CPU             : 2500 correct, 0 never written (still 0xDEADBEEFDEADBEEF), 0 zero, 0 other wrong
+  Interrupts this run: 1
+
+  Stage timing (CPU parts = model, PL parts = cycle-accurate RTL):
+  A  CPU writes A,B into BRAMs (10000 x 32 bit)   1500.00 us   150000 cyc  [model: 150 ns/write]
+  B  start: GPIO write -> toggle2pulse -> start      0.18 us       18 cyc  [GPIO model + 2 cyc]
+  C  PL: on-chip copy of A,B (LOAD, 2500 el.)       25.07 us     2507 cyc  
+  D  PL: multiply + accumulate (1000 pairs)         94.16 us     9416 cyc  
+  E  PL: last pair -> last product                   0.05 us        5 cyc  
+  F  PL: last product -> last C block to writer      0.40 us       40 cyc  
+  G  PL: last C block -> done (last write resp.)     0.84 us       84 cyc  
+     = PL total (start pulse -> done)              120.52 us    12052 cyc  
+     write-back span (first AW -> done)             94.75 us     9475 cyc  (overlaps D)
+  H  done -> interrupt handler                       1.00 us      100 cyc  [model]
+  I  CPU reads C back (2500 x 64 bit)              750.00 us    75000 cyc  [model: 300 ns/read]
+     = app 'compute' (GPIO write -> ISR)           121.70 us    12170 cyc  
+     = app end-to-end (load+compute+read-back)    2371.70 us   237170 cyc  
+  Inside the PL run (12056 cycles):
+    multiplier busy (not ready)         : 8422 cycles
+    write-back with bursts in flight    : 7005 cycles
+    accumulator waiting for the writer  : 3853 cycles
+CSV,stage,2,A_cpu_bram_load,2372035,3872035
+CSV,stage,2,B_start,3872055,3872235
+CSV,stage,2,C_onchip_copy,3872235,3897305
+CSV,stage,2,D_mult_acc,3897305,3991465
+CSV,stage,2,E_last_product,3991465,3991515
+CSV,stage,2,F_last_block,3991515,3991915
+CSV,stage,2,G_last_write_done,3991915,3992755
+CSV,stage,2,W_writeback_span,3898005,3992755
+CSV,stage,2,H_irq,3992755,3993755
+CSV,stage,2,I_cpu_readback,3993755,4743755
+CSV,util,2,12056,8422,7005,3853
+CSV,check,2,0,0,0,0,0,0,0,2500,0,0,0,1
+
+RESULT: ALL 2 RUNS CORRECT
